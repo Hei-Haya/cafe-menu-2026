@@ -781,19 +781,39 @@
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             
-            // Check if the URL has ?mode=staff
             if (params.get('mode') === 'staff') {
-                // Hide customer view, Show staff view
-                document.getElementById('customer-view').classList.add('hidden-section');
-                document.getElementById('staff-view').classList.remove('hidden-section');
+                // Change header visually
+                const subtitle = document.querySelector('header p');
+                subtitle.innerText = "STAFF EDIT MODE";
+                subtitle.classList.replace('text-brand', 'text-red-600');
+                
+                // Reconstruct the editable cart from the URL
+                try {
+                    const compressedCart = JSON.parse(decodeURIComponent(params.get('c')));
+                    menuData.forEach(cat => {
+                        cat.subcategories.forEach(sub => {
+                            sub.items.forEach(item => {
+                                if (compressedCart[item.id]) {
+                                    cart[item.id] = { ...item, quantity: compressedCart[item.id] };
+                                }
+                            });
+                        });
+                    });
+                } catch(e) {}
 
-                // Populate staff screen with order data
-                document.getElementById('staff-table').innerText = params.get('table') || "N/A";
-                document.getElementById('staff-name').innerText = params.get('name') || "N/A";
-                document.getElementById('staff-items').innerText = params.get('items') || "No items";
-                document.getElementById('staff-total').innerText = "₹" + (params.get('total') || "0");
+                // Pre-fill Name and Table
+                document.getElementById('customer-name').value = params.get('name') || "";
+                document.getElementById('table-number').value = params.get('table') || "";
+
+                // Swap bottom buttons in Cart Modal
+                document.getElementById('customer-buttons').classList.add('hidden');
+                document.getElementById('staff-buttons').classList.remove('hidden');
+
+                // Render menu and open cart automatically
+                renderMenu();
+                updateUI();
+                toggleCartModal();
             } else {
-                // Normal Customer View
                 renderMenu();
             }
         };
