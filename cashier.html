@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier Portal - Hei Haya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f3f4f6; }
+        
+        /* PRINT STYLES FOR 80mm THERMAL PRINTER */
+        @media print {
+            @page { margin: 0; size: 80mm auto; }
+            body * { visibility: hidden; }
+            #print-section, #print-section * { visibility: visible; }
+            #print-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 76mm; /* Slight margin for 80mm paper */
+                padding: 2mm;
+                font-family: 'Courier New', Courier, monospace;
+                color: #000;
+                font-size: 12px;
+                line-height: 1.4;
+            }
+            .dashed-line { border-top: 1px dashed #000; margin: 8px 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+
+    <!-- CASHIER UI -->
+    <div id="ui-section" class="bg-white rounded-3xl shadow-xl w-full max-w-md p-8 border border-gray-100">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Cashier Portal</h1>
+            <p class="text-gray-500 mt-1">Print GST Inclusive Receipts</p>
+        </div>
+
+        <label class="block text-sm font-bold text-gray-700 mb-2">Enter Order Sequence Number</label>
+        <div class="flex items-center bg-gray-50 border border-gray-300 rounded-xl overflow-hidden focus-within:border-orange-600 focus-within:ring-1 focus-within:ring-orange-600 transition-all">
+            <div id="prefix-display" class="px-4 py-4 bg-gray-100 text-gray-500 font-mono font-bold border-r border-gray-300">
+                IM-YYYY-MM-DD-
+            </div>
+            <input type="number" id="seq-input" placeholder="005" class="w-full px-4 py-4 bg-transparent outline-none font-mono text-xl font-bold text-gray-900" onkeypress="if(event.key === 'Enter') fetchAndPrint()">
+        </div>
+
+        <button id="print-btn" onclick="fetchAndPrint()" class="w-full mt-6 bg-[#ea580c] hover:bg-[#c2410c] text-white py-4 rounded-xl font-bold text-lg shadow-md transition-colors flex justify-center items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Fetch & Print Receipt
+        </button>
+
+        <div id="status-msg" class="mt-4 text-center text-sm font-semibold text-red-600 hidden"></div>
+    </div>
+
+    <!-- HIDDEN THERMAL PRINT LAYOUT -->
+    <div id="print-section" class="hidden">
+        <h2 style="text-align: center; margin-bottom: 2px; font-size: 18px; font-family: sans-serif; font-weight: bold;">HEI HAYA CAFE</h2>
+        <div style="text-align: center; font-size: 11px; margin-bottom: 15px;">Imphal, Manipur</div>
+        
+        <div><strong>Order ID:</strong> <span id="p-order"></span></div>
+        <div><strong>Date:</strong> <span id="p-date"></span></div>
+        <div><strong>Customer:</strong> <span id="p-name"></span></div>
+        <div><strong>Table No:</strong> <span id="p-table"></span></div>
+        
+        <div class="dashed-line"></div>
+        <pre id="p-items" style="font-family: inherit; font-size: 12px; white-space: pre-wrap; margin: 0;"></pre>
+        <div class="dashed-line"></div>
+        
+        <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+            <tr><td>Base Amount:</td><td style="text-align: right;">₹<span id="p-base"></span></td></tr>
+            <tr><td>CGST (2.5%):</td><td style="text-align: right;">₹<span id="p-cgst"></span></td></tr>
+            <tr><td>SGST (2.5%):</td><td style="text-align: right;">₹<span id="p-sgst"></span></td></tr>
+            <tr><td colspan="2"><div class="dashed-line"></div></td></tr>
+            <tr style="font-size: 16px; font-weight: bold;">
+                <td>GRAND TOTAL:</td><td style="text-align: right;">₹<span id="p-total"></span></td>
+            </tr>
+        </table>
+        
+        <div style="text-align: center; margin-top: 15px; font-size: 10px;">
+            * Prices are inclusive of 5% GST *<br><br>
+            Thank you for visiting us!<br>
+            Scan QR on table to order more.
+        </div>
+    </div>
+
+    <script>
+        // ADD YOUR DEPLOYED GOOGLE SCRIPT URL HERE
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEUv3IdeCMlRyCkxrkOA5-Rf6Kjr9e7psgkfCIgO9R8JE0e9pGeBzxZ_DFv6Zhcoc/exec";
+
+        let todayPrefix = "";
+
+        // On Load: Generate today's prefix automatically
+        window.onload = () => {
+            const today = new Date();
+            const dateStr = today.getFullYear() + "-" + ("0" + (today.getMonth() + 1)).slice(-2) + "-" + ("0" + today.getDate()).slice(-2);
+            todayPrefix = "IM-" + dateStr + "-";
+            document.getElementById('prefix-display').innerText = todayPrefix;
+        };
+
+        function fetchAndPrint() {
+            const seqInput = document.getElementById('seq-input').value.trim();
+            const statusMsg = document.getElementById('status-msg');
+            const btn = document.getElementById('print-btn');
+
+            if (!seqInput) {
+                statusMsg.innerText = "Please enter an order number.";
+                statusMsg.classList.remove('hidden');
+                return;
+            }
+
+            // Format input to 3 digits (e.g., '5' becomes '005')
+            const formattedSeq = seqInput.padStart(3, '0');
+            const fullOrderId = todayPrefix + formattedSeq;
+
+            // UI Loading state
+            statusMsg.classList.add('hidden');
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Finding Order...`;
+            btn.disabled = true;
+
+            // Fetch data from Google Apps Script
+            fetch(`${GOOGLE_SCRIPT_URL}?orderId=${fullOrderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    btn.innerHTML = `Fetch & Print Receipt`;
+                    btn.disabled = false;
+
+                    if (data.error) {
+                        statusMsg.innerText = "Order not found in database. Check the number.";
+                        statusMsg.classList.remove('hidden');
+                        return;
+                    }
+
+                    // Calculate Reverse GST
+                    const rawTotal = parseFloat(data.total || "0");
+                    const basePrice = rawTotal / 1.05;
+                    const gstAmount = rawTotal - basePrice;
+                    const cgst = gstAmount / 2;
+
+                    // Inject data into print layout
+                    document.getElementById('p-order').innerText = data.orderId;
+                    document.getElementById('p-date').innerText = new Date(data.date).toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'});
+                    document.getElementById('p-name').innerText = data.name;
+                    document.getElementById('p-table').innerText = data.table;
+                    document.getElementById('p-items').innerText = data.items;
+                    
+                    document.getElementById('p-base').innerText = basePrice.toFixed(2);
+                    document.getElementById('p-cgst').innerText = cgst.toFixed(2);
+                    document.getElementById('p-sgst').innerText = cgst.toFixed(2);
+                    document.getElementById('p-total').innerText = rawTotal.toFixed(2);
+
+                    // Trigger browser print
+                    document.getElementById('print-section').style.display = 'block';
+                    window.print();
+                    document.getElementById('print-section').style.display = ''; // Reset after print
+                    
+                    // Clear input for next order
+                    document.getElementById('seq-input').value = '';
+                })
+                .catch(err => {
+                    btn.innerHTML = `Fetch & Print Receipt`;
+                    btn.disabled = false;
+                    statusMsg.innerText = "Network error. Please try again.";
+                    statusMsg.classList.remove('hidden');
+                });
+        }
+    </script>
+</body>
+</html>
