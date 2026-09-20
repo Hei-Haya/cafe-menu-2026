@@ -679,13 +679,23 @@
                 return; 
             }
 
+            // READ LIVE INPUTS IN CASE WAITRESS CHANGED THEM
+            const customerName = document.getElementById('customer-name').value.trim();
+            const tableNo = document.getElementById('table-number').value.trim();
+            const { total } = getCartTotal();
+
+            if (total === 0) { showToast("Cart is empty"); return; }
+            if (!customerName || !tableNo) { showToast("Please enter both Name and Table Number"); return; }
+
+            // GENERATE FINAL ITEMS LIST FROM EDITED CART
+            let finalItemsText = "";
+            Object.values(cart).forEach(item => { 
+                finalItemsText += `${item.quantity}x ${item.name} = ₹${item.price * item.quantity}\n`; 
+            });
+
             const params = new URLSearchParams(window.location.search);
             const token = params.get('token'); 
-            const customerName = params.get('name');
-            const tableNo = params.get('table');
-            const items = params.get('items');
-            const total = params.get('total');
-            const via = params.get('via'); // <--- Reads whether it was QR or WhatsApp
+            const via = params.get('via'); 
 
             const btn = document.getElementById('staff-confirm-btn');
             btn.innerText = "Assigning Order ID...";
