@@ -609,6 +609,7 @@
         // ========================================== 
         // 1. CUSTOMER SENDS ORDER
         // ========================================== 
+
         function sendOrderToWhatsApp() {
             const customerName = document.getElementById('customer-name').value.trim();
             const tableNo = document.getElementById('table-number').value.trim();
@@ -617,7 +618,6 @@
             if (total === 0) { showToast("Cart is empty"); return; }
             if (!customerName || !tableNo) { showToast("Please enter both Name and Table Number"); return; }
 
-            // Generate a hidden anti-duplicate token instead of a final Order ID
             const token = Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
 
             let orderDetailsText = "";
@@ -628,6 +628,25 @@
                 orderDetailsText += itemLine;  
                 message += itemLine;            
             });
+
+            message += `-------------------------\n*GRAND TOTAL: ₹${total}*\n`;
+            
+            const currentWebsiteUrl = window.location.href.split('?')[0]; 
+            const confirmUrl = new URL(currentWebsiteUrl);
+            confirmUrl.searchParams.append('mode', 'staff');
+            confirmUrl.searchParams.append('via', 'wa'); // <--- Tells the system this is a WhatsApp order
+            confirmUrl.searchParams.append('token', token);
+            confirmUrl.searchParams.append('name', customerName);
+            confirmUrl.searchParams.append('table', tableNo);
+            confirmUrl.searchParams.append('items', orderDetailsText.trim());
+            confirmUrl.searchParams.append('total', total);
+
+            message += `\n*STAFF ACTION REQUIRED:*\nWaitress, click below to confirm this order:\n`;
+            message += confirmUrl.toString();
+
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${RESTAURANT_WHATSAPP_NUMBER}&text=${encodeURIComponent(message)}`;
+            window.location.href = whatsappUrl; 
+        }
 
             message += `-------------------------\n*GRAND TOTAL: ₹${total}*\n`;
             
