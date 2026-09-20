@@ -682,6 +682,7 @@
             const tableNo = params.get('table');
             const items = params.get('items');
             const total = params.get('total');
+            const via = params.get('via'); // <--- Reads whether it was QR or WhatsApp
 
             const btn = document.getElementById('staff-confirm-btn');
             btn.innerText = "Assigning Order ID...";
@@ -707,25 +708,32 @@
                     return; 
                 }
 
-                // If successful, Google replies with "Success|IM-2026-09-20-XXX"
                 if (result.startsWith("Success|")) {
-                    const officialOrderId = result.split("|")[1]; // Extracts the generated sequential ID
+                    const officialOrderId = result.split("|")[1]; 
 
-                    const now = new Date();
-                    const formattedDate = ("0" + now.getDate()).slice(-2) + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + now.getFullYear();
-                    let hours = now.getHours();
-                    const minutes = ("0" + now.getMinutes()).slice(-2);
-                    const ampm = hours >= 12 ? 'pm' : 'am';
-                    hours = hours % 12;
-                    hours = hours ? hours : 12;
-                    const formattedTime = hours + ":" + minutes + ampm;
+                    if (via === 'wa') {
+                        // Standard WhatsApp flow
+                        const now = new Date();
+                        const formattedDate = ("0" + now.getDate()).slice(-2) + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + now.getFullYear();
+                        let hours = now.getHours();
+                        const minutes = ("0" + now.getMinutes()).slice(-2);
+                        const ampm = hours >= 12 ? 'pm' : 'am';
+                        hours = hours % 12;
+                        hours = hours ? hours : 12;
+                        const formattedTime = hours + ":" + minutes + ampm;
 
-                    let waMessage = `Thagatchari! Your order (${officialOrderId}), with the following items, has been confirmed on ${formattedDate} at ${formattedTime} and is being prepared.\n\n`;
-                    waMessage += `${items}\n*Total: ₹${total}*\n\n`;
-                    waMessage += `with love and care from Hei Haya Cafe\n\n`;
-                    waMessage += `_Please feel free to scan the QR code to add more items._`;
-                    
-                    window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
+                        let waMessage = `Thagatchari! Your order (${officialOrderId}), with the following items, has been confirmed on ${formattedDate} at ${formattedTime} and is being prepared.\n\n`;
+                        waMessage += `${items}\n*Total: ₹${total}*\n\n`;
+                        waMessage += `with love and care from Hei Haya Cafe\n\n`;
+                        waMessage += `_Please feel free to scan the QR code to add more items._`;
+                        
+                        window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
+                    } else {
+                        // QR Code flow - do not open WhatsApp
+                        btn.innerText = "Order Confirmed!";
+                        btn.style.backgroundColor = "#22c55e"; // Turns the button green
+                        alert(`Success! Order ID: ${officialOrderId}\n\nThe PDF receipt has been saved to Google Drive and the kitchen has been notified.`);
+                    }
                 } else {
                     throw new Error(result);
                 }
