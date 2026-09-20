@@ -446,6 +446,9 @@
             confirmUrl.searchParams.append('name', customerName);
             confirmUrl.searchParams.append('table', tableNo);
             confirmUrl.searchParams.append('items', orderDetailsText.trim());
+            const compressedCart = {};
+            Object.values(cart).forEach(item => { compressedCart[item.id] = item.quantity; });
+            confirmUrl.searchParams.append('c', encodeURIComponent(JSON.stringify(compressedCart)));
             confirmUrl.searchParams.append('total', total);
 
             // Swap modals
