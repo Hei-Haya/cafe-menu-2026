@@ -133,6 +133,15 @@
         <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full text-sm font-medium shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-50">
             Message
         </div>
+        <!-- QR Code Hand-off Modal -->
+        <div id="qr-modal" class="fixed inset-0 bg-gray-900/80 z-50 hidden flex-col items-center justify-center p-6">
+            <div class="bg-white rounded-3xl w-full max-w-sm p-8 text-center animate-slide-up">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Order Ready</h2>
+                <p class="text-gray-500 mb-6 text-sm">Ask the waitress to scan this code to confirm your order.</p>
+                <div id="qrcode-container" class="flex justify-center mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100"></div>
+                <button onclick="closeQrModal()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-xl font-bold">Cancel</button>
+            </div>
+        </div>
     </main>
 
     <script>
