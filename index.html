@@ -705,7 +705,7 @@
             formData.append('token', token);
             formData.append('name', customerName);
             formData.append('table', tableNo);
-            formData.append('items', items);
+            formData.append('items', finalItemsText.trim()); // <-- FIXED
             formData.append('total', total);
 
             fetch(GOOGLE_SCRIPT_URL, {
@@ -732,8 +732,8 @@
                     actionsDiv.classList.remove('hidden');
                     actionsDiv.classList.add('flex');
 
-                    // Prepare the Kitchen Ticket
-                    const kitchenMsg = `👨‍🍳 *KITCHEN TICKET* 👨‍🍳\n*Order ID:* ${officialOrderId}\n*Table No:* ${tableNo}\n-------------------------\n${items}`;
+                    // Prepare the Kitchen Ticket using the FIXED live cart text
+                    const kitchenMsg = `👨‍🍳 *KITCHEN TICKET* 👨‍🍳\n*Order ID:* ${officialOrderId}\n*Table No:* ${tableNo}\n-------------------------\n${finalItemsText.trim()}`;
                     const kitchenLink = `https://api.whatsapp.com/send?phone=${KITCHEN_WHATSAPP_NUMBER}&text=${encodeURIComponent(kitchenMsg)}`;
 
                     let actionHtml = '';
@@ -749,7 +749,8 @@
                         hours = hours ? hours : 12;
                         const formattedTime = hours + ":" + minutes + ampm;
 
-                        let waMessage = `Thagatchari! Your order (${officialOrderId}), with the following items, has been confirmed on ${formattedDate} at ${formattedTime} and is being prepared.\n\n${items}\n*Total: ₹${total}*\n\nwith love and care from Hei Haya Cafe\n\n_Please feel free to scan the QR code to add more items._`;
+                        // Uses the FIXED live cart text
+                        let waMessage = `Thagatchari! Your order (${officialOrderId}), with the following items, has been confirmed on ${formattedDate} at ${formattedTime} and is being prepared.\n\n${finalItemsText.trim()}\n*Total: ₹${total}*\n\nwith love and care from Hei Haya Cafe\n\n_Please feel free to scan the QR code to add more items._`;
                         
                         const customerLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
 
