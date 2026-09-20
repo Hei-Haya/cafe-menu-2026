@@ -131,7 +131,7 @@
 
     <script>
         // Set the restaurant's WhatsApp phone number here (include country code, no +)
-        const RESTAURANT_WHATSAPP_NUMBER = "919612778722"; 
+        const RESTAURANT_WHATSAPP_NUMBER = "918920670165"; 
         
         // Add your deployed Google Web App URL here
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxq40w2MpH7uvDBDlm2t6FAAJjNaCUzx9UdSbYt64xxpx_bC4-DbtewsH-Z_0g8tCzn/exec";
@@ -588,33 +588,25 @@
         // 2. STAFF CONFIRMS ORDER (Frontend Logic)
         // ========================================== 
         function confirmAndLogOrder() {
-            // NEW: Ask for the PIN before doing anything else
             const enteredPin = prompt("Enter Staff PIN to confirm this order:");
-            
             if (enteredPin !== STAFF_PIN) {
                 alert("Incorrect PIN. Order not confirmed.");
-                return; // Stops the function immediately
+                return; 
             }
 
             const params = new URLSearchParams(window.location.search);
+            const token = params.get('token'); 
             const customerName = params.get('name');
             const tableNo = params.get('table');
             const items = params.get('items');
             const total = params.get('total');
 
             const btn = document.getElementById('staff-confirm-btn');
-            btn.innerText = "Saving to Database...";
+            btn.innerText = "Assigning Order ID...";
             btn.disabled = true;
 
-            // Generate Order ID locally
-            const today = new Date();
-            const dateStr = today.getFullYear() + "-" + ("0"+(today.getMonth()+1)).slice(-2) + "-" + ("0"+today.getDate()).slice(-2);
-            const randomCode = ("00" + Math.floor(1 + Math.random() * 999)).slice(-3); // Generates 001 to 999
-            const orderId = "IM-" + dateStr + "-" + randomCode;
-
-            // Send to Google Sheets Silently
             const formData = new URLSearchParams();
-            formData.append('orderId', orderId);
+            formData.append('token', token);
             formData.append('name', customerName);
             formData.append('table', tableNo);
             formData.append('items', items);
@@ -622,26 +614,39 @@
 
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                body: formData,
-                mode: 'no-cors' // Crucial to bypass Google's cross-origin block
-            }).then(() => {
-                // Format current date and time (e.g., 20-09-2026 at 2:32pm)
-                const now = new Date();
-                const formattedDate = ("0" + now.getDate()).slice(-2) + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + now.getFullYear();
-                let hours = now.getHours();
-                const minutes = ("0" + now.getMinutes()).slice(-2);
-                const ampm = hours >= 12 ? 'pm' : 'am';
-                hours = hours % 12;
-                hours = hours ? hours : 12;
-                const formattedTime = hours + ":" + minutes + ampm;
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                if (result === "Duplicate") {
+                    alert("This order has already been confirmed and entered in the database.");
+                    btn.innerText = "Order Already Confirmed";
+                    btn.style.display = 'none'; 
+                    return; 
+                }
 
-                // Instantly open WhatsApp to send the updated receipt
-                let waMessage = `Thagatchari! Your order (${orderId}), with the following items, has been confirmed on ${formattedDate} at ${formattedTime} and is being prepared.\n\n`;
-                waMessage += `${items}\n*Total: ₹${total}*\n\n`;
-                waMessage += `with love and care from Hei Haya Cafe\n\n`;
-                waMessage += `_Please feel free to scan the QR code to add more items._`;
-                
-                window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
+                // If successful, Google replies with "Success|IM-2026-09-20-XXX"
+                if (result.startsWith("Success|")) {
+                    const officialOrderId = result.split("|")[1]; // Extracts the generated sequential ID
+
+                    const now = new Date();
+                    const formattedDate = ("0" + now.getDate()).slice(-2) + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + now.getFullYear();
+                    let hours = now.getHours();
+                    const minutes = ("0" + now.getMinutes()).slice(-2);
+                    const ampm = hours >= 12 ? 'pm' : 'am';
+                    hours = hours % 12;
+                    hours = hours ? hours : 12;
+                    const formattedTime = hours + ":" + minutes + ampm;
+
+                    let waMessage = `Thagatchari! Your order (${officialOrderId}), with the following items, has been confirmed on ${formattedDate} at ${formattedTime} and is being prepared.\n\n`;
+                    waMessage += `${items}\n*Total: ₹${total}*\n\n`;
+                    waMessage += `with love and care from Hei Haya Cafe\n\n`;
+                    waMessage += `_Please feel free to scan the QR code to add more items._`;
+                    
+                    window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
+                } else {
+                    throw new Error(result);
+                }
             }).catch(e => {
                 alert("Network error saving to sheet. Please try again.");
                 btn.innerText = "Confirm & Log to Database";
