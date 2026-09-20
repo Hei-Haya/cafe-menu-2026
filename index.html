@@ -347,9 +347,7 @@
                 return;
             }
 
-            showToast("Sending order to kitchen...");
-
-            // 1. Compile the text for Google Sheets and WhatsApp
+            // 1. Compile the text
             let orderDetailsText = "";
             let message = `🍽️ *NEW ORDER* 🍽️\n`;
             message += `*Customer:* ${customerName}\n`;
@@ -357,47 +355,27 @@
             message += `-------------------------\n`;
 
             Object.values(cart).forEach(item => {
-                // E.g., "2x Butter Chicken = ₹760\n"
                 const itemLine = `${item.quantity}x ${item.name} = ₹${item.price * item.quantity}\n`;
-                orderDetailsText += itemLine;  // Save to sheet payload
-                message += itemLine;           // Save to WA payload
+                orderDetailsText += itemLine;  
+                message += itemLine;           
             });
 
             message += `-------------------------\n`;
             message += `*GRAND TOTAL: ₹${total}*\n`;
-            message += `\nThank you!`;
+            
+            // 2. Build the hidden confirmation link for the staff
+            const confirmUrl = new URL(GOOGLE_SCRIPT_URL);
+            confirmUrl.searchParams.append('name', customerName);
+            confirmUrl.searchParams.append('table', tableNo);
+            confirmUrl.searchParams.append('items', orderDetailsText.trim());
+            confirmUrl.searchParams.append('total', total);
 
-            // 2. Prepare data for Google Sheets
-            const formData = new URLSearchParams();
-            formData.append('name', customerName);
-            formData.append('table', tableNo);
-            formData.append('items', orderDetailsText.trim());
-            formData.append('total', total);
+            message += `\n*STAFF ACTION REQUIRED:*\n`;
+            message += `Click the link below to confirm this order and log it to the database:\n`;
+            message += confirmUrl.toString();
 
-            // 3. Send data to Google Sheets in the background
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                body: formData,
-                mode: 'no-cors' // Crucial for static sites calling Apps Script
-            })
-            .then(() => {
-                // 4. After successfully sending, open WhatsApp
-                const encodedMessage = encodeURIComponent(message);
-                const whatsappUrl = `https://api.whatsapp.com/send?phone=${RESTAURANT_WHATSAPP_NUMBER}&text=${encodedMessage}`;
-                window.location.href = whatsappUrl; // Safer than window.open for mobile redirects
-            })
-            .catch(error => {
-                // Fallback: If the database fails (e.g., poor signal), still send the order to WhatsApp
-                const encodedMessage = encodeURIComponent(message);
-                const whatsappUrl = `https://api.whatsapp.com/send?phone=${RESTAURANT_WHATSAPP_NUMBER}&text=${encodedMessage}`;
-                window.location.href = whatsappUrl;
-            });
+            // 3. Open WhatsApp
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${RESTAURANT_WHATSAPP_NUMBER}&text=${encodedMessage}`;
+            window.location.href = whatsappUrl; 
         }
-
-        // Initialize application on load
-        window.onload = () => {
-            renderMenu();
-        };
-    </script>
-</body>
-</html>
