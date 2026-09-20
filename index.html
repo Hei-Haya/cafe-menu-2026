@@ -130,11 +130,15 @@
     </main>
 
     <script>
+        // Set the restaurant's WhatsApp phone number here (include country code, no +)
         const RESTAURANT_WHATSAPP_NUMBER = "918920670165"; 
         
-        // --- PASTE YOUR NEW GOOGLE WEB APP URL HERE (The one from Step 1) ---
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtGSVTpT-K0qL6SrapUUlO5znHXwaOTi91XvhkvRas5SQjtFZ-NgZlf1X9Ab2cTLu-/exec";
+        // Add your deployed Google Web App URL here
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBvbJCXlBGNRNgFPlGwc93E3R0Jt51h0MOmw3GEDzML1wmzg9wxiXi-Z-WCW7F_kmX/exec";
 
+        // --- NEW: ADD STAFF PIN ---
+        const STAFF_PIN = "1234";
+        
         const menuData = [
             { category: "Starters", items: [ { id: 's1', name: 'Punjabi Samosa (2 pcs)', desc: 'Crispy pastry filled with spiced potatoes.', price: 90, type: 'veg' }, { id: 's2', name: 'Paneer Tikka', desc: 'Marinated cottage cheese cooked in tandoor.', price: 240, type: 'veg' }, { id: 's3', name: 'Chicken 65', desc: 'Spicy, deep-fried chicken bites.', price: 280, type: 'non-veg' } ] },
             { category: "Main Course", items: [ { id: 'm1', name: 'Butter Chicken', desc: 'Chicken simmered in rich creamy tomato gravy.', price: 380, type: 'non-veg' }, { id: 'm2', name: 'Dal Makhani', desc: 'Black lentils slow-cooked with butter.', price: 260, type: 'veg' }, { id: 'm3', name: 'Palak Paneer', desc: 'Cottage cheese in mild spiced spinach puree.', price: 290, type: 'veg' } ] },
@@ -296,6 +300,14 @@
         // 2. STAFF CONFIRMS ORDER (Frontend Logic)
         // ========================================== 
         function confirmAndLogOrder() {
+            // NEW: Ask for the PIN before doing anything else
+            const enteredPin = prompt("Enter Staff PIN to confirm this order:");
+            
+            if (enteredPin !== STAFF_PIN) {
+                alert("Incorrect PIN. Order not confirmed.");
+                return; // Stops the function immediately
+            }
+
             const params = new URLSearchParams(window.location.search);
             const customerName = params.get('name');
             const tableNo = params.get('table');
