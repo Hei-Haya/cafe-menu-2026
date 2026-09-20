@@ -554,21 +554,24 @@
             if (total === 0) { showToast("Cart is empty"); return; }
             if (!customerName || !tableNo) { showToast("Please enter both Name and Table Number"); return; }
 
+            // Generate a hidden anti-duplicate token instead of a final Order ID
+            const token = Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+
             let orderDetailsText = "";
             let message = `🍽️ *NEW ORDER* 🍽️\n*Customer:* ${customerName}\n*Table No:* ${tableNo}\n-------------------------\n`;
 
             Object.values(cart).forEach(item => {
                 const itemLine = `${item.quantity}x ${item.name} = ₹${item.price * item.quantity}\n`;
                 orderDetailsText += itemLine;  
-                message += itemLine;           
+                message += itemLine;            
             });
 
             message += `-------------------------\n*GRAND TOTAL: ₹${total}*\n`;
             
-            // Generate link to YOUR GitHub website (not Google)
             const currentWebsiteUrl = window.location.href.split('?')[0]; 
             const confirmUrl = new URL(currentWebsiteUrl);
             confirmUrl.searchParams.append('mode', 'staff');
+            confirmUrl.searchParams.append('token', token); // Pass token instead of ID
             confirmUrl.searchParams.append('name', customerName);
             confirmUrl.searchParams.append('table', tableNo);
             confirmUrl.searchParams.append('items', orderDetailsText.trim());
