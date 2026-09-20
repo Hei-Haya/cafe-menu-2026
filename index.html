@@ -698,9 +698,23 @@
 
                 if (result.startsWith("Success|")) {
                     const officialOrderId = result.split("|")[1]; 
+                    
+                    // Hide the loading button
+                    btn.style.display = 'none';
 
+                    // Reveal the post-confirmation actions container
+                    const actionsDiv = document.getElementById('post-confirm-actions');
+                    actionsDiv.classList.remove('hidden');
+                    actionsDiv.classList.add('flex');
+
+                    // Prepare the Kitchen Ticket
+                    const kitchenMsg = `👨‍🍳 *KITCHEN TICKET* 👨‍🍳\n*Order ID:* ${officialOrderId}\n*Table No:* ${tableNo}\n-------------------------\n${items}`;
+                    const kitchenLink = `https://api.whatsapp.com/send?phone=${KITCHEN_WHATSAPP_NUMBER}&text=${encodeURIComponent(kitchenMsg)}`;
+
+                    let actionHtml = '';
+
+                    // Generate Customer Button ONLY if it was a WhatsApp order
                     if (via === 'wa') {
-                        // Standard WhatsApp flow
                         const now = new Date();
                         const formattedDate = ("0" + now.getDate()).slice(-2) + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + now.getFullYear();
                         let hours = now.getHours();
@@ -710,18 +724,22 @@
                         hours = hours ? hours : 12;
                         const formattedTime = hours + ":" + minutes + ampm;
 
-                        let waMessage = `Thagatchari! Your order (${officialOrderId}), with the following items, has been confirmed on ${formattedDate} at ${formattedTime} and is being prepared.\n\n`;
-                        waMessage += `${items}\n*Total: ₹${total}*\n\n`;
-                        waMessage += `with love and care from Hei Haya Cafe\n\n`;
-                        waMessage += `_Please feel free to scan the QR code to add more items._`;
+                        let waMessage = `Thagatchari! Your order (${officialOrderId}), with the following items, has been confirmed on ${formattedDate} at ${formattedTime} and is being prepared.\n\n${items}\n*Total: ₹${total}*\n\nwith love and care from Hei Haya Cafe\n\n_Please feel free to scan the QR code to add more items._`;
                         
-                        window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
+                        const customerLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
+
+                        // Adds the green customer forwarding button
+                        actionHtml += `<button onclick="window.location.href='${customerLink}'" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-xl font-bold text-lg shadow-md flex justify-center items-center gap-2 transition-colors">Forward Receipt to Customer</button>`;
                     } else {
-                        // QR Code flow - do not open WhatsApp
-                        btn.innerText = "Order Confirmed!";
-                        btn.style.backgroundColor = "#22c55e"; // Turns the button green
-                        alert(`Success! Order ID: ${officialOrderId}\n\nThe PDF receipt has been saved to Google Drive and the kitchen has been notified.`);
+                        // For QR code orders, just show a polite success banner
+                        actionHtml += `<div class="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl text-center font-bold mb-1 shadow-sm">✅ Order Saved: ${officialOrderId}</div>`;
                     }
+
+                    // Always add the dark Kitchen Ticket button at the bottom
+                    actionHtml += `<button onclick="window.location.href='${kitchenLink}'" class="w-full bg-gray-900 hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-lg shadow-md flex justify-center items-center gap-2 transition-colors">Send Ticket to Kitchen</button>`;
+
+                    actionsDiv.innerHTML = actionHtml;
+
                 } else {
                     throw new Error(result);
                 }
