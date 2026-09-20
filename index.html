@@ -412,6 +412,54 @@
 
         let cart = {};
 
+        function generateOrderQR() {
+            const customerName = document.getElementById('customer-name').value.trim();
+            const tableNo = document.getElementById('table-number').value.trim();
+            const { total } = getCartTotal();
+            
+            if (total === 0) { showToast("Cart is empty"); return; }
+            if (!customerName || !tableNo) { showToast("Please enter both Name and Table Number"); return; }
+
+            const token = Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+            let orderDetailsText = "";
+            Object.values(cart).forEach(item => { orderDetailsText += `${item.quantity}x ${item.name} = ₹${item.price * item.quantity}\n`; });
+
+            const currentWebsiteUrl = window.location.href.split('?')[0]; 
+            const confirmUrl = new URL(currentWebsiteUrl);
+            confirmUrl.searchParams.append('mode', 'staff');
+            confirmUrl.searchParams.append('via', 'qr'); // Flags this as a non-WhatsApp order
+            confirmUrl.searchParams.append('token', token);
+            confirmUrl.searchParams.append('name', customerName);
+            confirmUrl.searchParams.append('table', tableNo);
+            confirmUrl.searchParams.append('items', orderDetailsText.trim());
+            confirmUrl.searchParams.append('total', total);
+
+            // Swap modals
+            document.getElementById('cart-modal').classList.add('hidden');
+            document.getElementById('cart-modal').classList.remove('flex');
+            
+            const qrModal = document.getElementById('qr-modal');
+            qrModal.classList.remove('hidden');
+            qrModal.classList.add('flex');
+            
+            // Draw the QR Code in your brand orange
+            document.getElementById('qrcode-container').innerHTML = ""; 
+            new QRCode(document.getElementById("qrcode-container"), {
+                text: confirmUrl.toString(),
+                width: 200,
+                height: 200,
+                colorDark : "#ea580c", 
+                colorLight : "#f9fafb",
+                correctLevel : QRCode.CorrectLevel.L
+            });
+        }
+
+        function closeQrModal() {
+            document.getElementById('qr-modal').classList.add('hidden');
+            document.getElementById('qr-modal').classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
         const getFoodIcon = (type) => {
             if(type === 'veg') return `<div class="w-4 h-4 border border-green-600 flex-shrink-0 flex items-center justify-center rounded-sm"><div class="w-2 h-2 bg-green-600 rounded-full"></div></div>`;
             return `<div class="w-4 h-4 border border-red-600 flex-shrink-0 flex items-center justify-center rounded-sm"><div class="w-2 h-2 bg-red-600 rounded-full"></div></div>`;
