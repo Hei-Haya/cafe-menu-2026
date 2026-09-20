@@ -648,24 +648,7 @@
             window.location.href = whatsappUrl; 
         }
 
-            message += `-------------------------\n*GRAND TOTAL: ₹${total}*\n`;
             
-            const currentWebsiteUrl = window.location.href.split('?')[0]; 
-            const confirmUrl = new URL(currentWebsiteUrl);
-            confirmUrl.searchParams.append('mode', 'staff');
-            confirmUrl.searchParams.append('token', token); // Pass token instead of ID
-            confirmUrl.searchParams.append('name', customerName);
-            confirmUrl.searchParams.append('table', tableNo);
-            confirmUrl.searchParams.append('items', orderDetailsText.trim());
-            confirmUrl.searchParams.append('total', total);
-
-            message += `\n*STAFF ACTION REQUIRED:*\nWaitress, click below to confirm this order:\n`;
-            message += confirmUrl.toString();
-
-            const whatsappUrl = `https://api.whatsapp.com/send?phone=${RESTAURANT_WHATSAPP_NUMBER}&text=${encodeURIComponent(message)}`;
-            window.location.href = whatsappUrl; 
-        }
-
         // ========================================== 
         // 2. STAFF CONFIRMS ORDER (Frontend Logic)
         // ========================================== 
