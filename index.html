@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Spice & Heritage - Order Now</title>
+    <title>Hei Haya Cafe - Order Now</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -48,7 +48,7 @@
         
         <!-- Header -->
         <header class="bg-white px-6 py-6 text-center shadow-sm sticky top-0 z-40">
-            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Spice & Heritage</h1>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Hei Haya Cafe</h1>
             <p class="text-brand text-xs font-semibold tracking-widest uppercase mt-1">Tap to add items</p>
         </header>
 
@@ -113,7 +113,6 @@
             </div>
         </div>
 
-        <!-- Custom Toast/Message Box -->
         <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full text-sm font-medium shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-50">
             Message
         </div>
@@ -122,6 +121,9 @@
     <script>
         // Set the restaurant's WhatsApp phone number here (include country code, no +)
         const RESTAURANT_WHATSAPP_NUMBER = "918920670165"; 
+        
+        // Add your deployed Google Web App URL here
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
 
         // Menu Data structure
         const menuData = [
@@ -344,28 +346,37 @@
                 return;
             }
 
+            // 1. Compile the text
+            let orderDetailsText = "";
             let message = `🍽️ *NEW ORDER* 🍽️\n`;
             message += `*Customer:* ${customerName}\n`;
             message += `*Table No:* ${tableNo}\n`;
             message += `-------------------------\n`;
 
             Object.values(cart).forEach(item => {
-                // Formatting: 2x Butter Chicken = ₹760
-                message += `${item.quantity}x ${item.name} = ₹${item.price * item.quantity}\n`;
+                const itemLine = `${item.quantity}x ${item.name} = ₹${item.price * item.quantity}\n`;
+                orderDetailsText += itemLine;  
+                message += itemLine;           
             });
 
             message += `-------------------------\n`;
             message += `*GRAND TOTAL: ₹${total}*\n`;
-            message += `\nThank you!`;
+            
+            // 2. Build the hidden confirmation link for the staff
+            const confirmUrl = new URL(GOOGLE_SCRIPT_URL);
+            confirmUrl.searchParams.append('name', customerName);
+            confirmUrl.searchParams.append('table', tableNo);
+            confirmUrl.searchParams.append('items', orderDetailsText.trim());
+            confirmUrl.searchParams.append('total', total);
 
-            // Encode string for URL
+            message += `\n*STAFF ACTION REQUIRED:*\n`;
+            message += `Click the link below to confirm this order and log it to the database:\n`;
+            message += confirmUrl.toString();
+
+            // 3. Open WhatsApp
             const encodedMessage = encodeURIComponent(message);
-            
-            // Generate WhatsApp URL
             const whatsappUrl = `https://api.whatsapp.com/send?phone=${RESTAURANT_WHATSAPP_NUMBER}&text=${encodedMessage}`;
-            
-            // Open WhatsApp
-            window.open(whatsappUrl, '_blank');
+            window.location.href = whatsappUrl; 
         }
 
         // Initialize application on load
