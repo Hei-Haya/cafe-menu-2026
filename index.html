@@ -622,10 +622,21 @@
                 body: formData,
                 mode: 'no-cors' // Crucial to bypass Google's cross-origin block
             }).then(() => {
-                // Instantly open WhatsApp to send the receipt
-                let waMessage = `Thagatchari! Your order (${orderId}), with following items, has been confirmed and is being prepared.\n\n`;
+                // Format current date and time (e.g., 20-09-2026 at 2:32pm)
+                const now = new Date();
+                const formattedDate = ("0" + now.getDate()).slice(-2) + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + now.getFullYear();
+                let hours = now.getHours();
+                const minutes = ("0" + now.getMinutes()).slice(-2);
+                const ampm = hours >= 12 ? 'pm' : 'am';
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                const formattedTime = hours + ":" + minutes + ampm;
+
+                // Instantly open WhatsApp to send the updated receipt
+                let waMessage = `Thagatchari! Your order (${orderId}), with the following items, has been confirmed on ${formattedDate} at ${formattedTime} and is being prepared.\n\n`;
                 waMessage += `${items}\n*Total: ₹${total}*\n\n`;
-                waMessage += `with love and care from Hei Haya Cafe`;
+                waMessage += `with love and care from Hei Haya Cafe\n\n`;
+                waMessage += `_Please feel free to scan the QR code to add more items._`;
                 
                 window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
             }).catch(e => {
