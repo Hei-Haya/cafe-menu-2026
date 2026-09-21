@@ -618,25 +618,27 @@
             const container = document.getElementById('menu-container');
             let html = '';
             menuData.forEach((section, secIndex) => {
-                html += `<section class="mb-8"><h2 class="text-2xl font-bold text-gray-900 border-b-2 border-brand/20 pb-2 mb-4">${section.category}</h2>`;
+                // ADDED: category-section class
+                html += `<section class="mb-8 category-section"><h2 class="text-2xl font-bold text-gray-900 border-b-2 border-brand/20 pb-2 mb-4">${section.category}</h2>`;
                 
                 section.subcategories.forEach((sub, subIndex) => {
                     const subcatId = `sub-${secIndex}-${subIndex}`;
-                    // "All" subcategories (like Bibimbap) open by default. Others remain closed until tapped.
                     const isOpen = sub.subCategory === "All";
                     
+                    // ADDED: subcategory-card class
                     html += `
-                    <div class="mb-4 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="mb-4 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden subcategory-card">
                         <button onclick="toggleSubcategory('${subcatId}')" class="w-full px-5 py-4 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none">
                             <span class="font-bold text-lg text-gray-800">${sub.subCategory}</span>
                             <svg id="${subcatId}-icon" class="w-5 h-5 text-brand transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
-                        <div id="${subcatId}" class="${isOpen ? '' : 'hidden'} px-4 py-2 space-y-4 bg-white">
+                        <div id="${subcatId}" class="subcat-items-container ${isOpen ? '' : 'hidden'} px-4 py-2 space-y-4 bg-white">
                     `;
                     
                     sub.items.forEach(item => {
+                        // ADDED: item-row class and data-name attribute for the search engine
                         html += `
-                            <div class="py-3 border-b border-gray-50 last:border-0 flex justify-between items-center gap-4">
+                            <div class="item-row py-3 border-b border-gray-50 last:border-0 flex justify-between items-center gap-4" data-name="${item.name.toLowerCase()}">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2 mb-1">${getFoodIcon(item.type)}<h3 class="font-semibold text-gray-900 leading-tight">${item.name}</h3></div>
                                     <div class="font-bold text-brand mt-1">₹ ${item.price}</div>
