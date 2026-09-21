@@ -1129,9 +1129,77 @@
                 }).catch(err => { document.getElementById(`${type}-result-label`).innerText = "Error fetching data."; });
         }
 
+        function generateRangeReport() {
+            const start = document.getElementById('range-start').value;
+            const end = document.getElementById('range-end').value;
+            
+            if (!start || !end) return alert("Please select both start and end dates.");
+            
+            const resultBox = document.getElementById('range-result');
+            document.getElementById('range-result-label').innerText = "Compiling Report...";
+            resultBox.classList.remove('hidden');
+
+            fetch(`${GOOGLE_SCRIPT_URL}?action=range&start=${start}&end=${end}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('range-result-label').innerText = `Report: ${start} to ${end}`;
+                    document.getElementById('range-result-income').innerText = `₹${data.income.toFixed(2)}`;
+                    document.getElementById('range-result-count').innerText = `${data.count} orders`;
+
+                    const printWindow = window.open('', '_blank');
+                    let tableRows = data.items.map(item => `
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${new Date(item.date).toLocaleDateString('en-IN')}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.orderId}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.customer || '-'}</td>
+                            <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">₹${item.total.toFixed(2)}</td>
+                        </tr>
+                    `).join('');
+
+                    const html = `
+                        <html>
+                        <head>
+                            <title>Sales Report: ${start} to ${end}</title>
+                            <style>
+                                body { font-family: sans-serif; padding: 40px; color: #111; }
+                                table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+                                th { background: #f3f4f6; padding: 10px; text-align: left; border-bottom: 2px solid #000; }
+                                h1 { margin-bottom: 5px; font-size: 24px; }
+                                .summary { margin-top: 30px; font-size: 16px; font-weight: bold; text-align: right; background: #f9fafb; padding: 20px; border-radius: 8px; }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Hei Haya Cafe - Sales Report</h1>
+                            <p><strong>Reporting Period:</strong> ${start} to ${end}</p>
+                            <table>
+                                <thead>
+                                    <tr><th>Timestamp</th><th>Order ID</th><th>Customer</th><th style="text-align: right;">Amount</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${tableRows}
+                                </tbody>
+                            </table>
+                            <div class="summary">
+                                <p style="margin: 0 0 10px 0;">Total Orders: ${data.count}</p>
+                                <p style="margin: 0; font-size: 20px;">Total Income: ₹${data.income.toFixed(2)}</p>
+                            </div>
+                            <script>
+                                window.onload = () => { window.print(); }
+                            <\\/script>
+                        </body>
+                        </html>
+                    `;
+                    printWindow.document.write(html);
+                    printWindow.document.close();
+                })
+                .catch(err => {
+                    document.getElementById('range-result-label').innerText = "Error generating report.";
+                });
+        }
+
         // ========================================== 
         // 5. APPLICATION ROUTER & ASYNC BOOTSTRAP
-        // ========================================== 
+        // ==========================================
         window.onload = () => {
             const today = new Date();
             currentYear = today.getFullYear();
