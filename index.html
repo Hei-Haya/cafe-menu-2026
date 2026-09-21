@@ -448,6 +448,60 @@
 
         let cart = {};
 
+        let isStaffMode = false;
+
+        function toggleAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.style.overflow = 'hidden';
+            } else {
+                modal.classList.add('hidden'); modal.classList.remove('flex'); document.body.style.overflow = '';
+            }
+        }
+
+        function verifyAdmin() {
+            const user = document.getElementById('admin-user').value.trim();
+            const pass = document.getElementById('admin-pass').value.trim();
+            const btn = document.getElementById('admin-login-btn');
+            const errorMsg = document.getElementById('admin-error');
+
+            if (!user || !pass) return;
+
+            btn.innerText = "Verifying...";
+            btn.disabled = true;
+            errorMsg.style.opacity = '0';
+
+            fetch(`${GOOGLE_SCRIPT_URL}?action=login&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`)
+                .then(res => res.json())
+                .then(data => {
+                    btn.innerText = "Login";
+                    btn.disabled = false;
+                    
+                    if (data.success) {
+                        isStaffMode = true;
+                        toggleAdminModal();
+                        showToast("POS Mode Activated");
+                        
+                        // Switch UI to Staff Mode visually
+                        const subtitle = document.getElementById('header-subtitle');
+                        subtitle.innerText = "STAFF POS MODE";
+                        subtitle.classList.replace('text-brand', 'text-red-600');
+                        
+                        // Reveal Staff confirmation buttons, hide customer buttons
+                        document.getElementById('customer-buttons').classList.add('hidden');
+                        document.getElementById('staff-buttons').classList.remove('hidden');
+                        document.getElementById('staff-buttons').classList.add('flex');
+                    } else {
+                        errorMsg.style.opacity = '1';
+                    }
+                })
+                .catch(err => {
+                    btn.innerText = "Login";
+                    btn.disabled = false;
+                    alert("Network error. Try again.");
+                });
+        }
+        
         function generateOrderQR() {
             const customerName = document.getElementById('customer-name').value.trim();
             const tableNo = document.getElementById('table-number').value.trim();
