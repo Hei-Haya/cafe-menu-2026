@@ -604,20 +604,20 @@
                         <span class="font-bold text-xl text-gray-900">${section.category}</span>
                         <svg id="${catId}-icon" class="w-5 h-5 text-brand transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div id="${catId}" class="cat-items-container ${isOpen ? '' : 'hidden'} px-4 py-2 space-y-4 bg-white">`;
+                    <div id="${catId}" class="cat-items-container ${isOpen ? '' : 'hidden'} p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-gray-50/50">`;
                 
                 section.items.forEach(item => {
                     html += `
-                        <div class="item-row py-3 border-b border-gray-50 last:border-0 flex justify-between items-center gap-4" data-name="${item.name.toLowerCase()}">
+                        <div class="item-row p-4 border border-gray-100 rounded-xl flex justify-between items-center gap-4 bg-white shadow-sm hover:shadow-md transition-shadow" data-name="${item.name.toLowerCase()}">
                             <div class="flex-1">
-                                <h3 class="font-semibold text-gray-900 leading-tight mb-1">${item.name}</h3>
-                                <div class="font-bold text-brand">₹ ${item.price}</div>
+                                <h3 class="font-semibold text-gray-900 leading-tight mb-1 md:text-lg">${item.name}</h3>
+                                <div class="font-bold text-brand md:text-lg">₹ ${item.price}</div>
                             </div>
                             <div class="flex-shrink-0">
-                                <div id="controls-${item.id}" class="flex items-center bg-brand-light border border-brand/20 rounded-lg overflow-hidden h-9 w-24">
-                                    <button onclick="updateQuantity('${item.id}', -1)" class="w-8 h-full flex items-center justify-center text-brand hover:bg-brand hover:text-white transition-colors font-bold text-lg">-</button>
-                                    <div id="qty-${item.id}" class="flex-1 flex items-center justify-center font-semibold text-gray-900 text-sm">0</div>
-                                    <button onclick="updateQuantity('${item.id}', 1)" class="w-8 h-full flex items-center justify-center text-brand hover:bg-brand hover:text-white transition-colors font-bold text-lg">+</button>
+                                <div id="controls-${item.id}" class="flex items-center bg-brand-light border border-brand/20 rounded-lg overflow-hidden h-9 md:h-10 w-24 md:w-28">
+                                    <button onclick="updateQuantity('${item.id}', -1)" class="w-8 md:w-10 h-full flex items-center justify-center text-brand hover:bg-brand hover:text-white transition-colors font-bold text-lg">-</button>
+                                    <div id="qty-${item.id}" class="flex-1 flex items-center justify-center font-semibold text-gray-900 text-sm md:text-base">0</div>
+                                    <button onclick="updateQuantity('${item.id}', 1)" class="w-8 md:w-10 h-full flex items-center justify-center text-brand hover:bg-brand hover:text-white transition-colors font-bold text-lg">+</button>
                                 </div>
                             </div>
                         </div>`;
