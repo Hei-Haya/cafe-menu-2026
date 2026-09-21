@@ -892,6 +892,11 @@
                     // Always add the dark Kitchen Ticket button at the bottom
                     actionHtml += `<button onclick="window.location.href='${kitchenLink}'" class="w-full bg-gray-900 hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-lg shadow-md flex justify-center items-center gap-2 transition-colors">Send Ticket to Kitchen</button>`;
 
+                    // NEW: Add "Start New Order" button if in persistent POS mode
+                    if (isStaffMode && via === 'pos') {
+                        actionHtml += `<button onclick="startNewOrder()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-900 py-4 rounded-xl font-bold text-lg shadow-md transition-colors mt-2 border border-gray-300">Start New Order</button>`;
+                    }
+
                     actionsDiv.innerHTML = actionHtml;
 
                 } else {
