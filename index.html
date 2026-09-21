@@ -29,6 +29,19 @@
         html { scroll-behavior: smooth; }
         body { -webkit-tap-highlight-color: transparent; }
         .hidden-section { display: none !important; }
+
+        /* PRINT STYLES FOR 80mm THERMAL PRINTER */
+        @media print {
+            @page { margin: 0; size: 80mm auto; }
+            body * { visibility: hidden; }
+            #print-section, #print-section * { visibility: visible; }
+            #print-section {
+                position: absolute; left: 0; top: 0; width: 76mm; padding: 2mm;
+                font-family: 'Courier New', Courier, monospace; color: #000;
+                font-size: 12px; line-height: 1.4;
+            }
+            .dashed-line { border-top: 1px dashed #000; margin: 8px 0; }
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 antialiased font-sans">
