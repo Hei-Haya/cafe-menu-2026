@@ -328,6 +328,9 @@
             actionsDiv.classList.add('hidden');
             actionsDiv.classList.remove('flex');
             
+            // Un-hide the cart items container for the next customer
+            document.getElementById('cart-items-container').classList.remove('hidden');
+            
             updateUI(); // This will auto-close the cart modal because the cart is empty
         }
 
