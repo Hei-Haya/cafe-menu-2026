@@ -780,8 +780,8 @@
             
             const currentWebsiteUrl = window.location.href.split('?')[0]; 
             const confirmUrl = new URL(currentWebsiteUrl);
-            confirmUrl.searchParams.append('mode', 'staff');
-            confirmUrl.searchParams.append('via', 'wa'); // <--- Tells the system this is a WhatsApp order
+            confirmUrl.searchParams.append('mode', 'confirm'); // Changed from 'staff' to 'confirm'
+            confirmUrl.searchParams.append('via', 'wa');
             confirmUrl.searchParams.append('token', token);
             confirmUrl.searchParams.append('name', customerName);
             confirmUrl.searchParams.append('table', tableNo);
