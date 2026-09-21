@@ -703,15 +703,11 @@
         }
 
         // ========================================== 
-        // 3. APPLICATION ROUTER
-        // ========================================== 
-        // ========================================== 
-        // 3. APPLICATION ROUTER
+        // 3. APPLICATION ROUTER & ASYNC BOOTSTRAP
         // ========================================== 
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             
-            // Check if POS Mode is saved in browser storage
             if (localStorage.getItem('hei_haya_pos') === 'true') {
                 isStaffMode = true;
                 activateStaffUI();
@@ -719,35 +715,32 @@
             
             if (params.get('mode') === 'staff') {
                 activateStaffUI();
-                
-                // Reconstruct the editable cart from the URL
+                document.getElementById('customer-name').value = params.get('name') || "";
+                document.getElementById('table-number').value = params.get('table') || "";
+                document.getElementById('customer-buttons').classList.add('hidden');
+                document.getElementById('staff-buttons').classList.remove('hidden');
+            }
+            
+            // Trigger Menu Fetch on Load!
+            fetchMenu();
+        };
+
+        // Runs automatically after fetchMenu() succeeds
+        function restoreCartFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('mode') === 'staff') {
                 try {
                     const compressedCart = JSON.parse(decodeURIComponent(params.get('c')));
                     menuData.forEach(cat => {
-                        cat.subcategories.forEach(sub => {
-                            sub.items.forEach(item => {
-                                if (compressedCart[item.id]) {
-                                    cart[item.id] = { ...item, quantity: compressedCart[item.id] };
-                                }
-                            });
+                        cat.items.forEach(item => {
+                            if (compressedCart[item.id]) {
+                                cart[item.id] = { ...item, quantity: compressedCart[item.id] };
+                            }
                         });
                     });
                 } catch(e) {}
-
-                // Pre-fill Name and Table
-                document.getElementById('customer-name').value = params.get('name') || "";
-                document.getElementById('table-number').value = params.get('table') || "";
-
-                // Swap bottom buttons in Cart Modal
-                document.getElementById('customer-buttons').classList.add('hidden');
-                document.getElementById('staff-buttons').classList.remove('hidden');
-
-                // Render menu and open cart automatically
-                renderMenu();
                 updateUI();
                 toggleCartModal();
-            } else {
-                renderMenu();
             }
         };
     </script>
