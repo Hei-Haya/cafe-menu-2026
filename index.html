@@ -953,7 +953,8 @@
 
                     actionHtml += `<button onclick="window.location.href='${kitchenLink}'" class="w-full bg-gray-900 hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-lg shadow-md flex justify-center items-center gap-2 transition-colors">Send Ticket to Kitchen</button>`;
 
-                    if (isStaffMode && via === 'pos') {
+                    // --- NEW: Show Start New Order for ALL staff confirmation types ---
+                    if (isStaffMode) {
                         actionHtml += `<button onclick="startNewOrder()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-900 py-4 rounded-xl font-bold text-lg shadow-md transition-colors mt-2 border border-gray-300">Start New Order</button>`;
                     }
                     
