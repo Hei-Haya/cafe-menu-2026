@@ -442,7 +442,10 @@
         let cart = {};
 
         let isStaffMode = false;
+        
+        // For the permanent Cashier Tablet
         function activateStaffUI() {
+            isStaffMode = true;
             const subtitle = document.getElementById('header-subtitle');
             subtitle.innerText = "STAFF POS MODE";
             subtitle.classList.replace('text-brand', 'text-red-600');
@@ -455,8 +458,20 @@
             document.getElementById('admin-logout-icon').classList.remove('hidden');
             document.getElementById('admin-logout-icon').classList.add('flex');
             
-            // NEW: Show Hamburger
             document.getElementById('staff-menu-btn').classList.remove('hidden');
+        }
+
+        // For Waitresses clicking WhatsApp links (temporary, no hamburger menu)
+        function activateWaitressUI() {
+            const subtitle = document.getElementById('header-subtitle');
+            subtitle.innerText = "PENDING ORDER REVIEW";
+            subtitle.classList.replace('text-brand', 'text-blue-600');
+            
+            document.getElementById('customer-buttons').classList.add('hidden');
+            document.getElementById('staff-buttons').classList.remove('hidden');
+            document.getElementById('staff-buttons').classList.add('flex');
+            
+            // Do NOT hide the Admin Login Icon, Do NOT show logout, Do NOT show Hamburger.
         }
 
         function logoutAdmin() {
