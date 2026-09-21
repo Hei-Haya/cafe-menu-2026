@@ -245,13 +245,20 @@
         // NEW: Set the Kitchen / Chef's WhatsApp phone number here
         const KITCHEN_WHATSAPP_NUMBER = "919366206186";
         
-        // Add your deployed Google Web App URL here
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzEBq6iLdjhAU_VTu5r4jneDvSOF3BQXfEY0lYGAXi3kZuyhLnr5kqoD9Nhpe3exZQX/exec";
 
-        // --- NEW: ADD STAFF PIN ---
+        // --- CONFIGURATION ---
         const STAFF_PIN = "1234";
+        const UPI_ID = "heihayacafe@okaxis"; 
+        const PAYEE_NAME = "Hei Haya Cafe";
         
-       let menuData = []; // Starts empty, fills from Google Sheets
+        let menuData = []; // Starts empty, fills from Google Sheets
+
+        function printReceipt() {
+            document.getElementById('print-section').style.display = 'block';
+            window.print();
+            document.getElementById('print-section').style.display = ''; 
+        }
         
         // --- NEW: FETCH LIVE MENU ---
         function fetchMenu() {
