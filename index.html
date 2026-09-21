@@ -756,9 +756,20 @@
             }
 
             // READ LIVE INPUTS IN CASE WAITRESS CHANGED THEM
-            const customerName = document.getElementById('customer-name').value.trim();
-            const tableNo = document.getElementById('table-number').value.trim();
+            let customerName = document.getElementById('customer-name').value.trim();
+            let tableNo = document.getElementById('table-number').value.trim();
             const { total } = getCartTotal();
+
+            if (total === 0) { showToast("Cart is empty"); return; }
+            
+            if (isStaffMode) {
+                // POS Mode: Auto-fill defaults if staff leaves them blank
+                if (!customerName) customerName = "Walk-in";
+                if (!tableNo) tableNo = "Counter";
+            } else {
+                // Standard Link/QR Mode: Enforce required fields
+                if (!customerName || !tableNo) { showToast("Please enter both Name and Table Number"); return; }
+            }
 
             if (total === 0) { showToast("Cart is empty"); return; }
             if (!customerName || !tableNo) { showToast("Please enter both Name and Table Number"); return; }
