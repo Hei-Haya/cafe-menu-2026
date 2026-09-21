@@ -59,6 +59,15 @@
                 
                 <p id="header-subtitle" class="text-brand text-xs font-bold tracking-widest uppercase inline-block bg-brand/10 px-4 py-1 rounded-full">Tap to add items</p>
                 
+                <!-- NEW: Hamburger Staff Menu (Hidden by Default) -->
+                <button id="staff-menu-btn" onclick="toggleStaffMenu()" class="hidden absolute left-6 top-6 text-gray-400 hover:text-brand transition-colors p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
+                <div id="staff-dropdown" class="hidden absolute left-6 top-14 bg-white shadow-xl rounded-xl border border-gray-100 flex-col w-48 overflow-hidden z-50 text-left animate-slide-up">
+                    <button onclick="openBillingPortal()" class="px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 border-b border-gray-100 w-full text-left">Billing Portal</button>
+                    <button onclick="openAnalytics()" class="px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 w-full text-left">Owner Analytics</button>
+                </div>
+
                 <!-- Admin Login Button -->
                 <button id="admin-login-icon" onclick="toggleAdminModal()" class="absolute right-6 top-6 text-gray-400 hover:text-brand transition-colors p-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
