@@ -659,6 +659,53 @@
             container.innerHTML = html;
         }
 
+        function filterMenu() {
+            const query = document.getElementById('menu-search').value.toLowerCase();
+            const sections = document.querySelectorAll('.category-section');
+
+            sections.forEach(section => {
+                let hasVisibleSubcat = false;
+                const subcats = section.querySelectorAll('.subcategory-card');
+
+                subcats.forEach(subcat => {
+                    let hasVisibleItem = false;
+                    const items = subcat.querySelectorAll('.item-row');
+                    const itemsContainer = subcat.querySelector('.subcat-items-container');
+                    const icon = subcat.querySelector('svg[id$="-icon"]');
+
+                    items.forEach(item => {
+                        const itemName = item.getAttribute('data-name');
+                        if (itemName.includes(query)) {
+                            item.classList.remove('hidden');
+                            item.classList.add('flex');
+                            hasVisibleItem = true;
+                        } else {
+                            item.classList.add('hidden');
+                            item.classList.remove('flex');
+                        }
+                    });
+
+                    if (hasVisibleItem) {
+                        subcat.classList.remove('hidden');
+                        hasVisibleSubcat = true;
+                        // If user is searching, auto-expand the category so they can see the result
+                        if (query !== "") {
+                            itemsContainer.classList.remove('hidden');
+                            if (icon) icon.style.transform = 'rotate(180deg)';
+                        }
+                    } else {
+                        subcat.classList.add('hidden');
+                    }
+                });
+
+                if (hasVisibleSubcat) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+        }
+
      function updateQuantity(itemId, change) {
             let itemData = null;
             menuData.forEach(cat => { 
