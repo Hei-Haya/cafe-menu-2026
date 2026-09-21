@@ -941,9 +941,184 @@
         }
 
         // ========================================== 
-        // 3. APPLICATION ROUTER & ASYNC BOOTSTRAP
+        // 4. HAMBURGER, BILLING & ANALYTICS LOGIC
+        // ========================================== 
+        function toggleStaffMenu() {
+            const dropdown = document.getElementById('staff-dropdown');
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden'); dropdown.classList.add('flex');
+            } else {
+                dropdown.classList.add('hidden'); dropdown.classList.remove('flex');
+            }
+        }
+
+        function openBillingPortal() {
+            toggleStaffMenu();
+            document.getElementById('billing-modal').classList.remove('hidden');
+            document.getElementById('billing-modal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            // Pre-fill today's date
+            document.getElementById('b-order-date').value = `${currentYear}-${currentMonth}-${currentDay}`;
+        }
+        function closeBillingModal() {
+            document.getElementById('billing-modal').classList.add('hidden');
+            document.getElementById('billing-modal').classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        function openAnalytics() {
+            toggleStaffMenu();
+            document.getElementById('analytics-modal').classList.remove('hidden');
+            document.getElementById('analytics-modal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeAnalyticsModal() {
+            document.getElementById('analytics-modal').classList.add('hidden');
+            document.getElementById('analytics-modal').classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        function fetchBillingOrder() {
+            const dateVal = document.getElementById('b-order-date').value;
+            const seqInput = document.getElementById('b-seq-input').value.trim();
+            const statusMsg = document.getElementById('b-status-msg');
+            const fetchBtn = document.getElementById('b-fetch-btn');
+
+            if (!dateVal || !seqInput) { statusMsg.innerText = "Select date and enter number."; statusMsg.classList.remove('hidden'); return; }
+
+            const formattedSeq = seqInput.padStart(3, '0');
+            const fullOrderId = `IM-${dateVal}-${formattedSeq}`;
+
+            statusMsg.classList.add('hidden');
+            document.getElementById('b-preview-section').classList.add('hidden');
+            fetchBtn.innerHTML = `Searching...`; fetchBtn.disabled = true;
+
+            fetch(`${GOOGLE_SCRIPT_URL}?orderId=${fullOrderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    fetchBtn.innerHTML = `Find Order`; fetchBtn.disabled = false;
+                    if (data.error) {
+                        statusMsg.innerHTML = "Order not found."; statusMsg.classList.remove('hidden'); return;
+                    }
+                    const rawTotal = parseFloat(data.total || "0");
+                    const basePrice = rawTotal / 1.05;
+                    const gstAmount = rawTotal - basePrice;
+                    const cgst = gstAmount / 2;
+
+                    // Populate Hidden Print Layout
+                    document.getElementById('p-order').innerText = data.orderId;
+                    document.getElementById('p-date').innerText = new Date(data.date).toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'});
+                    document.getElementById('p-name').innerText = data.name;
+                    document.getElementById('p-table').innerText = data.table;
+                    document.getElementById('p-items').innerText = data.items;
+                    document.getElementById('p-base').innerText = basePrice.toFixed(2);
+                    document.getElementById('p-cgst').innerText = cgst.toFixed(2);
+                    document.getElementById('p-sgst').innerText = cgst.toFixed(2);
+                    document.getElementById('p-total').innerText = rawTotal.toFixed(2);
+
+                    // Populate UI Preview Box
+                    document.getElementById('b-preview-name').innerText = data.name || "Unknown Customer";
+                    document.getElementById('b-preview-table').innerText = `(Table ${data.table || "-"})`;
+                    document.getElementById('b-preview-id').innerText = data.orderId;
+                    document.getElementById('b-preview-items').innerText = data.items;
+                    document.getElementById('b-preview-total').innerText = `₹${rawTotal.toFixed(2)}`;
+
+                    // Generate Dynamic UPI QR Code
+                    const upiString = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${rawTotal.toFixed(2)}&cu=INR`;
+                    document.getElementById('b-qr-amount').innerText = rawTotal.toFixed(2);
+                    document.getElementById('b-display-upi-id').innerText = UPI_ID;
+                    const qrContainer = document.getElementById('b-upi-qr-container');
+                    qrContainer.innerHTML = ""; 
+                    new QRCode(qrContainer, { text: upiString, width: 100, height: 100, colorDark : "#ea580c", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M });
+                    
+                    document.getElementById('b-preview-section').classList.remove('hidden');
+                })
+                .catch(err => {
+                    fetchBtn.innerHTML = `Find Order`; fetchBtn.disabled = false;
+                    statusMsg.innerText = "Network error."; statusMsg.classList.remove('hidden');
+                });
+        }
+
+        let activeLoadCount = 0;
+        function unlockAnalytics() {
+            const pinInput = document.getElementById('owner-pin-input');
+            const errorMsg = document.getElementById('pin-error');
+            if (pinInput.value.trim() === OWNER_PIN) {
+                document.getElementById('analytics-overlay').style.opacity = '0';
+                setTimeout(() => { document.getElementById('analytics-overlay').style.display = 'none'; }, 500);
+                document.getElementById('today-income').innerText = "Loading...";
+                document.getElementById('month-income').innerText = "Loading...";
+                loadDashboardStats(`IM-${currentYear}-${currentMonth}-${currentDay}`, 'today');
+                loadDashboardStats(`IM-${currentYear}-${currentMonth}`, 'month');
+            } else {
+                errorMsg.style.opacity = '1'; pinInput.value = ''; pinInput.focus();
+                setTimeout(() => { errorMsg.style.opacity = '0'; }, 2000);
+            }
+        }
+
+        function refreshQuickStats() {
+            document.getElementById('refresh-btn').classList.add('animate-spin');
+            document.getElementById('today-income').innerText = "Loading...";
+            document.getElementById('month-income').innerText = "Loading...";
+            loadDashboardStats(`IM-${currentYear}-${currentMonth}-${currentDay}`, 'today');
+            loadDashboardStats(`IM-${currentYear}-${currentMonth}`, 'month');
+        }
+
+        function loadDashboardStats(filterPrefix, target) {
+            const timestamp = new Date().getTime();
+            activeLoadCount++;
+            fetch(`${GOOGLE_SCRIPT_URL}?action=report&filter=${filterPrefix}&t=${timestamp}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById(`${target}-income`).innerText = `₹${data.income.toFixed(2)}`;
+                    document.getElementById(`${target}-count`).innerText = `${data.count} orders`;
+                    trackLoadCompletion();
+                }).catch(err => {
+                    document.getElementById(`${target}-income`).innerText = "Error";
+                    document.getElementById(`${target}-count`).innerText = "Failed";
+                    trackLoadCompletion();
+                });
+        }
+
+        function trackLoadCompletion() {
+            activeLoadCount--;
+            if (activeLoadCount <= 0) {
+                activeLoadCount = 0; document.getElementById('refresh-btn').classList.remove('animate-spin');
+            }
+        }
+
+        function fetchReport(type) {
+            let filterPrefix = ""; let displayLabel = "";
+            if (type === 'day') {
+                const dateVal = document.getElementById('search-date').value; 
+                if (!dateVal) return alert("Select a date.");
+                filterPrefix = `IM-${dateVal}`; displayLabel = `Sales on ${dateVal}`;
+            } else if (type === 'month') {
+                const monthVal = document.getElementById('search-month').value; 
+                if (!monthVal) return alert("Select a month.");
+                filterPrefix = `IM-${monthVal}`; displayLabel = `Sales for ${monthVal}`;
+            }
+            const resultBox = document.getElementById(`${type}-result`);
+            document.getElementById(`${type}-result-label`).innerText = "Loading...";
+            resultBox.classList.remove('hidden');
+            fetch(`${GOOGLE_SCRIPT_URL}?action=report&filter=${filterPrefix}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById(`${type}-result-label`).innerText = displayLabel;
+                    document.getElementById(`${type}-result-income`).innerText = `₹${data.income.toFixed(2)}`;
+                    document.getElementById(`${type}-result-count`).innerText = `${data.count} orders`;
+                }).catch(err => { document.getElementById(`${type}-result-label`).innerText = "Error fetching data."; });
+        }
+
+        // ========================================== 
+        // 5. APPLICATION ROUTER & ASYNC BOOTSTRAP
         // ========================================== 
         window.onload = () => {
+            const today = new Date();
+            currentYear = today.getFullYear();
+            currentMonth = ("0" + (today.getMonth() + 1)).slice(-2);
+            currentDay = ("0" + today.getDate()).slice(-2);
+
             const params = new URLSearchParams(window.location.search);
             
             if (localStorage.getItem('hei_haya_pos') === 'true') {
@@ -959,11 +1134,9 @@
                 document.getElementById('staff-buttons').classList.remove('hidden');
             }
             
-            // Trigger Menu Fetch on Load!
             fetchMenu();
         };
 
-        // Runs automatically after fetchMenu() succeeds
         function restoreCartFromURL() {
             const params = new URLSearchParams(window.location.search);
             if (params.get('mode') === 'staff') {
