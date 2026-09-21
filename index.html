@@ -160,6 +160,21 @@
                 <button onclick="closeQrModal()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-xl font-bold">Cancel</button>
             </div>
         </div>
+        <!-- Admin Login Modal -->
+        <div id="admin-modal" class="fixed inset-0 bg-gray-900/80 z-50 hidden flex-col items-center justify-center p-6">
+            <div class="bg-white rounded-3xl w-full max-w-sm p-8 text-center animate-slide-up relative">
+                <button onclick="toggleAdminModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Staff POS Login</h2>
+                <input type="text" id="admin-user" placeholder="Username" class="w-full px-4 py-3 mb-4 border border-gray-300 rounded-xl focus:ring-brand focus:border-brand outline-none text-left">
+                <input type="password" id="admin-pass" placeholder="Password" class="w-full px-4 py-3 mb-6 border border-gray-300 rounded-xl focus:ring-brand focus:border-brand outline-none text-left">
+                <button id="admin-login-btn" onclick="verifyAdmin()" class="w-full bg-brand hover:bg-brand-dark text-white py-4 rounded-xl font-bold text-lg shadow-md transition-colors">
+                    Login
+                </button>
+                <p id="admin-error" class="text-red-600 text-sm font-bold mt-4 opacity-0 transition-opacity">Invalid credentials</p>
+            </div>
+        </div>
     </main>
 
     <script>
