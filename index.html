@@ -453,6 +453,43 @@
         let cart = {};
 
         let isStaffMode = false;
+        function activateStaffUI() {
+            const subtitle = document.getElementById('header-subtitle');
+            subtitle.innerText = "STAFF POS MODE";
+            subtitle.classList.replace('text-brand', 'text-red-600');
+            
+            document.getElementById('customer-buttons').classList.add('hidden');
+            document.getElementById('staff-buttons').classList.remove('hidden');
+            document.getElementById('staff-buttons').classList.add('flex');
+            
+            document.getElementById('admin-login-icon').classList.add('hidden');
+            document.getElementById('admin-logout-icon').classList.remove('hidden');
+            document.getElementById('admin-logout-icon').classList.add('flex');
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('hei_haya_pos');
+            window.location.href = window.location.href.split('?')[0]; // Reloads clean menu
+        }
+
+        function startNewOrder() {
+            cart = {}; // Empty the cart
+            document.getElementById('customer-name').value = "";
+            document.getElementById('table-number').value = "";
+            
+            // Reset the confirm button
+            const btn = document.getElementById('staff-confirm-btn');
+            btn.style.display = 'block';
+            btn.innerText = "Confirm & Log to Database";
+            btn.disabled = false;
+            
+            // Hide the extra action buttons
+            const actionsDiv = document.getElementById('post-confirm-actions');
+            actionsDiv.classList.add('hidden');
+            actionsDiv.classList.remove('flex');
+            
+            updateUI(); // This will auto-close the cart modal because the cart is empty
+        }
 
         function toggleAdminModal() {
             const modal = document.getElementById('admin-modal');
