@@ -483,6 +483,9 @@
             // Un-hide the cart items container for the next customer
             document.getElementById('cart-items-container').classList.remove('hidden');
             
+            // --- NEW: Wipe URL parameters clean so a refresh doesn't reload the old order ---
+            window.history.replaceState(null, '', window.location.pathname);
+            
             updateUI(); // This will auto-close the cart modal because the cart is empty
         }
 
