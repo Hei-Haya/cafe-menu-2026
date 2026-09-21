@@ -413,6 +413,17 @@
                 .then(data => {
                     if (data.success) {
                         menuData = data.menu;
+                        
+                        // INJECT CONFIGURATION FROM SHEET
+                        if(data.config) {
+                            STAFF_PIN = data.config.staffPin;
+                            OWNER_PIN = data.config.ownerPin;
+                            RESTAURANT_WHATSAPP_NUMBER = data.config.restWa;
+                            KITCHEN_WHATSAPP_NUMBER = data.config.kitchenWa;
+                            UPI_ID = data.config.upiId;
+                            PAYEE_NAME = data.config.payeeName;
+                        }
+                        
                         renderMenu();
                         restoreCartFromURL(); // If staff is scanning a QR, load the cart!
                     } else {
