@@ -204,261 +204,28 @@
         // --- NEW: ADD STAFF PIN ---
         const STAFF_PIN = "1234";
         
-       const menuData = [
-    {
-        "category": "Breakfast & Morning Bites",
-        "subcategories": [
-            {
-                "subCategory": "Breads",
-                "items": [
-                    { "id": "i1", "name": "Tan (Roti) - Single", "price": 10, "type": "veg" },
-                    { "id": "i2", "name": "Tan (Roti) - Plate", "price": 20, "type": "veg" },
-                    { "id": "i3", "name": "Tangang (Sukha Roti) - Single", "price": 10, "type": "veg" },
-                    { "id": "i4", "name": "Tangang (Sukha Roti) - Plate", "price": 20, "type": "veg" },
-                    { "id": "i5", "name": "Aloo Paratha", "price": 30, "type": "veg" },
-                    { "id": "i6", "name": "Chicken Paratha", "price": 50, "type": "non-veg" }
-                ]
-            },
-            {
-                "subCategory": "Eggs",
-                "items": [
-                    { "id": "i7", "name": "Boiled Egg - Single", "price": 10, "type": "non-veg" },
-                    { "id": "i8", "name": "Boiled Egg - Plate of 2", "price": 25, "type": "non-veg" },
-                    { "id": "i10", "name": "Egg Bora", "price": 100, "type": "non-veg" }
-                ]
-            },
-            {
-                "subCategory": "Snacks",
-                "items": [
-                    { "id": "i9", "name": "Vegitable Bora", "price": 50, "type": "veg" },
-                    { "id": "i11", "name": "Tharoi Bora", "price": 100, "type": "veg" },
-                    { "id": "i12", "name": "Khajing Bora", "price": 50, "type": "veg" },
-                    { "id": "i13", "name": "Koukha Bora", "price": 100, "type": "veg" },
-                    { "id": "i14", "name": "Nga Bora", "price": 100, "type": "veg" },
-                    { "id": "i15", "name": "Chicken Bora", "price": 100, "type": "non-veg" },
-                    { "id": "i16", "name": "Vegitable Singju", "price": 50, "type": "veg" },
-                    { "id": "i17", "name": "Mimi Singju", "price": 50, "type": "veg" },
-                    { "id": "i18", "name": "Chicken Mimi Singju", "price": 70, "type": "non-veg" },
-                    { "id": "i19", "name": "Sandwish (Excel)", "price": 50, "type": "veg" },
-                    { "id": "i20", "name": "Burger (Excel)", "price": 80, "type": "veg" }
-                ]
-            }
-        ]
-    },
-    {
-        "category": "Sandwiches & Snacks",
-        "subcategories": [
-            {
-                "subCategory": "All",
-                "items": [
-                    { "id": "i21", "name": "Veg Sandwich", "price": 40, "type": "veg" },
-                    { "id": "i22", "name": "Chicken Sandwich", "price": 60, "type": "non-veg" },
-                    { "id": "i23", "name": "Chicken Samosa", "price": 100, "type": "non-veg" },
-                    { "id": "i24", "name": "Extra Cheese Add-on", "price": 10, "type": "veg" }
-                ]
-            }
-        ]
-    },
-    {
-        "category": "Beverages",
-        "subcategories": [
-            {
-                "subCategory": "Dairy & Milk",
-                "items": [
-                    { "id": "i25", "name": "Faroda", "price": 20, "type": "veg" },
-                    { "id": "i26", "name": "Boiled Fresh Milk", "price": 20, "type": "veg" },
-                    { "id": "i28", "name": "Fresh Milk (Take away only)", "price": 25, "type": "veg" },
-                    { "id": "i29", "name": "Lassi", "price": 50, "type": "veg" },
-                    { "id": "i30", "name": "Yogurt", "price": 40, "type": "veg" }
-                ]
-            },
-            {
-                "subCategory": "Juices",
-                "items": [
-                    { "id": "i27", "name": "Ash Gourd (Torbot) Juice", "price": 50, "type": "veg" },
-                    { "id": "i39", "name": "Green Apple Juice", "price": 90, "type": "veg" },
-                    { "id": "i40", "name": "Pineapple Juice", "price": 70, "type": "veg" },
-                    { "id": "i41", "name": "Guava Juice", "price": 70, "type": "veg" },
-                    { "id": "i42", "name": "Orange Juice", "price": 70, "type": "veg" },
-                    { "id": "i43", "name": "Pomegranet Juice", "price": 80, "type": "veg" },
-                    { "id": "i44", "name": "Strawberry Juice", "price": 100, "type": "veg" },
-                    { "id": "i45", "name": "Blue Berry Juice", "price": 100, "type": "veg" },
-                    { "id": "i46", "name": "Black Currant Juice", "price": 100, "type": "veg" },
-                    { "id": "i47", "name": "Kiwi Juice", "price": 100, "type": "veg" },
-                    { "id": "i48", "name": "Mix Fruit Juice", "price": 100, "type": "veg" },
-                    { "id": "i49", "name": "Mango Juice", "price": 80, "type": "veg" },
-                    { "id": "i50", "name": "Grapes Juice", "price": 80, "type": "veg" },
-                    { "id": "i51", "name": "Passion Fruit Juice", "price": 80, "type": "veg" },
-                    { "id": "i52", "name": "Lime Juice", "price": 40, "type": "veg" },
-                    { "id": "i53", "name": "Lime Juice with black salt (extra sour)", "price": 45, "type": "veg" },
-                    { "id": "i54", "name": "Lime Juice Soda", "price": 50, "type": "veg" },
-                    { "id": "i55", "name": "Mousambi Juice", "price": 70, "type": "veg" },
-                    { "id": "i56", "name": "Watermelon Juice", "price": 70, "type": "veg" },
-                    { "id": "i57", "name": "Apple Juice", "price": 70, "type": "veg" },
-                    { "id": "i58", "name": "Carrot Juice", "price": 70, "type": "veg" },
-                    { "id": "i59", "name": "Beetroot Juice", "price": 70, "type": "veg" },
-                    { "id": "i60", "name": "Spinach Juice", "price": 70, "type": "veg" },
-                    { "id": "i61", "name": "Cucumber Juice", "price": 70, "type": "veg" }
-                ]
-            },
-            {
-                "subCategory": "Tea & Coffee",
-                "items": [
-                    { "id": "i31", "name": "Red Tea", "price": 15, "type": "veg" },
-                    { "id": "i32", "name": "Milk Tea", "price": 20, "type": "veg" },
-                    { "id": "i33", "name": "Special Milk Tea with Cinnamon", "price": 20, "type": "veg" },
-                    { "id": "i34", "name": "Black Coffee", "price": 30, "type": "veg" },
-                    { "id": "i35", "name": "White Coffee", "price": 40, "type": "veg" },
-                    { "id": "i36", "name": "Green Tea", "price": 15, "type": "veg" },
-                    { "id": "i37", "name": "Heimang Tea", "price": 15, "type": "veg" },
-                    { "id": "i38", "name": "Ginger Honey Tea", "price": 30, "type": "veg" }
-                ]
-            }
-        ]
-    },
-    {
-        "category": "BBQ",
-        "subcategories": [
-            {
-                "subCategory": "Chicken BBQ",
-                "items": [
-                    { "id": "i62", "name": "Chicken Wings BBQ", "price": 200, "type": "non-veg" },
-                    { "id": "i63", "name": "Chicken Drumstick BBQ", "price": 220, "type": "non-veg" },
-                    { "id": "i64", "name": "Chicken Breast BBQ", "price": 250, "type": "non-veg" },
-                    { "id": "i65", "name": "Chicken Whole BBQ", "price": 500, "type": "non-veg" }
-                ]
-            },
-            {
-                "subCategory": "Pork BBQ",
-                "items": [
-                    { "id": "i66", "name": "Pork Ribs BBQ (regular)", "price": 250, "type": "non-veg" },
-                    { "id": "i67", "name": "Pork Ribs BBQ (large)", "price": 400, "type": "non-veg" },
-                    { "id": "i68", "name": "Pork Belly BBQ (regular)", "price": 250, "type": "non-veg" },
-                    { "id": "i69", "name": "Pork Belly BBQ (large)", "price": 400, "type": "non-veg" }
-                ]
-            }
-        ]
-    },
-    {
-        "category": "Soups & Noodles",
-        "subcategories": [
-            {
-                "subCategory": "Noodles",
-                "items": [
-                    { "id": "i70", "name": "Veg Ramen", "price": 110, "type": "veg" },
-                    { "id": "i71", "name": "Chicken Ramen", "price": 150, "type": "non-veg" },
-                    { "id": "i72", "name": "Pork Ramen", "price": 180, "type": "non-veg" },
-                    { "id": "i73", "name": "Beef Ramen", "price": 200, "type": "non-veg" }
-                ]
-            },
-            {
-                "subCategory": "Soups",
-                "items": [
-                    { "id": "i74", "name": "Chicken Clear Soup", "price": 120, "type": "non-veg" },
-                    { "id": "i75", "name": "Veg Sweet Corn Soup", "price": 90, "type": "veg" },
-                    { "id": "i76", "name": "Chicken Sweet Corn Soup", "price": 110, "type": "non-veg" },
-                    { "id": "i77", "name": "Veg Manchow Soup", "price": 120, "type": "veg" },
-                    { "id": "i78", "name": "Chicken Manchow Soup", "price": 160, "type": "non-veg" },
-                    { "id": "i79", "name": "Veg Mushroom Soup", "price": 120, "type": "veg" },
-                    { "id": "i80", "name": "Chicken Mushroom Soup", "price": 160, "type": "non-veg" },
-                    { "id": "i84", "name": "Veg Ginger Soup", "price": 90, "type": "veg" },
-                    { "id": "i85", "name": "Chicken Ginger Soup", "price": 110, "type": "non-veg" }
-                ]
-            },
-            {
-                "subCategory": "Other",
-                "items": [
-                    { "id": "i81", "name": "Veg Thukpa", "price": 100, "type": "veg" },
-                    { "id": "i82", "name": "Chicken Thukpa", "price": 140, "type": "non-veg" },
-                    { "id": "i83", "name": "Pork Thukpa", "price": 180, "type": "non-veg" }
-                ]
-            }
-        ]
-    },
-    {
-        "category": "Nourish Bowls & Salads",
-        "subcategories": [
-            {
-                "subCategory": "Nourish Bowls",
-                "items": [
-                    { "id": "i86", "name": "Pre Workout meals", "price": 90, "type": "veg" },
-                    { "id": "i87", "name": "Post workout meals", "price": 150, "type": "veg" },
-                    { "id": "i92", "name": "Boiled Chicken", "price": 130, "type": "non-veg" },
-                    { "id": "i93", "name": "Combo Nurishing Bowl", "price": 250, "type": "veg" },
-                    { "id": "i98", "name": "Banana Peanut Power Bowl", "price": 100, "type": "veg" },
-                    { "id": "i99", "name": "Apple Cinnamon Oat Bowl", "price": 70, "type": "veg" },
-                    { "id": "i100", "name": "Berry & Yogurt Energy Bowl", "price": 40, "type": "veg" },
-                    { "id": "i101", "name": "Peanut Butter Banana Toast", "price": 100, "type": "veg" },
-                    { "id": "i102", "name": "Egg & Avocado Toast", "price": 100, "type": "non-veg" },
-                    { "id": "i103", "name": "Fruit & Yogurt Bowl", "price": 40, "type": "veg" },
-                    { "id": "i104", "name": "Oats & Banana Bowl", "price": 100, "type": "veg" },
-                    { "id": "i105", "name": "Chicken Power Bowl", "price": 150, "type": "non-veg" },
-                    { "id": "i106", "name": "Egg Protein Bowl", "price": 150, "type": "non-veg" },
-                    { "id": "i107", "name": "Paneer Power Bowl", "price": 150, "type": "veg" },
-                    { "id": "i108", "name": "Chicken & Quinoa Bowl", "price": 150, "type": "non-veg" },
-                    { "id": "i109", "name": "Tuna Protein Bowl", "price": 150, "type": "veg" },
-                    { "id": "i110", "name": "Chickpea Protein Bowl", "price": 150, "type": "veg" },
-                    { "id": "i111", "name": "Paneer & Chickpea Bowl", "price": 150, "type": "veg" },
-                    { "id": "i112", "name": "HEI HAYA Power Bowl", "price": 170, "type": "veg" },
-                    { "id": "i113", "name": "HEI HAYA Green Bowl", "price": 140, "type": "veg" },
-                    { "id": "i114", "name": "HEI HAYA Energy Bowl", "price": 120, "type": "veg" },
-                    { "id": "i115", "name": "HEI HAYA Recovery Bowl", "price": 160, "type": "veg" }
-                ]
-            },
-            {
-                "subCategory": "Salads",
-                "items": [
-                    { "id": "i88", "name": "Veg Salad", "price": 80, "type": "veg" },
-                    { "id": "i89", "name": "Mixed Fruit Salad", "price": 70, "type": "veg" },
-                    { "id": "i90", "name": "Egg Salad with pulses and seeds", "price": 100, "type": "non-veg" },
-                    { "id": "i91", "name": "Mix Salad (Chicken, Veggies, pulses, seeds and nuts)", "price": 120, "type": "non-veg" },
-                    { "id": "i94", "name": "Veg Green Salad", "price": 120, "type": "veg" },
-                    { "id": "i95", "name": "Chicken Salad", "price": 130, "type": "non-veg" },
-                    { "id": "i96", "name": "Russian Salad", "price": 150, "type": "veg" },
-                    { "id": "i97", "name": "Mix Salad", "price": 180, "type": "veg" }
-                ]
-            }
-        ]
-    },
-    {
-        "category": "Bibimbap",
-        "subcategories": [
-            {
-                "subCategory": "All",
-                "items": [
-                    { "id": "i116", "name": "Chicken Bibimbap", "price": 210, "type": "non-veg" },
-                    { "id": "i117", "name": "Pork Bibimbap", "price": 240, "type": "non-veg" },
-                    { "id": "i118", "name": "Beef Bibimbap", "price": 260, "type": "non-veg" },
-                    { "id": "i119", "name": "Mix Bibimbap", "price": 280, "type": "veg" }
-                ]
-            }
-        ]
-    },
-    {
-        "category": "Momo & Kimbap",
-        "subcategories": [
-            {
-                "subCategory": "Momo",
-                "items": [
-                    { "id": "i120", "name": "Chicken Momo (steam)", "price": 120, "type": "non-veg" },
-                    { "id": "i121", "name": "Chicken Momo (Fry)", "price": 140, "type": "non-veg" },
-                    { "id": "i122", "name": "Chilli chicken momo", "price": 180, "type": "non-veg" },
-                    { "id": "i123", "name": "Pork Momo (steam)", "price": 150, "type": "non-veg" },
-                    { "id": "i124", "name": "Pork Momo (Fry)", "price": 180, "type": "non-veg" },
-                    { "id": "i125", "name": "Chilli pork momo", "price": 220, "type": "non-veg" }
-                ]
-            },
-            {
-                "subCategory": "Kimbap",
-                "items": [
-                    { "id": "i126", "name": "Chicken Kimbap", "price": 200, "type": "non-veg" },
-                    { "id": "i127", "name": "Pork Kimbap", "price": 220, "type": "non-veg" },
-                    { "id": "i128", "name": "Mix Kimbap", "price": 250, "type": "veg" }
-                ]
-            }
-        ]
-    }
-];
+       let menuData = []; // Starts empty, fills from Google Sheets
+        
+        // --- NEW: FETCH LIVE MENU ---
+        function fetchMenu() {
+            const container = document.getElementById('menu-container');
+            container.innerHTML = `<div class="text-center py-16"><svg class="animate-spin h-10 w-10 text-brand mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><p class="text-gray-500 font-bold tracking-widest uppercase text-sm animate-pulse">Loading Live Menu...</p></div>`;
+
+            fetch(`${GOOGLE_SCRIPT_URL}?action=getMenu`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        menuData = data.menu;
+                        renderMenu();
+                        restoreCartFromURL(); // If staff is scanning a QR, load the cart!
+                    } else {
+                        container.innerHTML = '<div class="text-center text-red-500 py-10 font-bold">Failed to load menu.</div>';
+                    }
+                })
+                .catch(err => {
+                    container.innerHTML = '<div class="text-center text-red-500 py-10 font-bold">Network Error. Check connection.</div>';
+                });
+        }
 
         let cart = {};
 
