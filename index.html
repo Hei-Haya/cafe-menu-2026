@@ -770,8 +770,14 @@
             });
 
             const params = new URLSearchParams(window.location.search);
-            const token = params.get('token'); 
-            const via = params.get('via'); 
+            let token = params.get('token'); 
+            let via = params.get('via'); 
+
+            // NEW: If staff is using the POS tablet directly, generate the token on the spot
+            if (isStaffMode) {
+                token = Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+                via = 'pos';
+            }
 
             const btn = document.getElementById('staff-confirm-btn');
             btn.innerText = "Assigning Order ID...";
