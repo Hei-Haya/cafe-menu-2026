@@ -519,20 +519,14 @@
                     btn.disabled = false;
                     
                     if (data.success) {
+                        if (data.success) {
                         isStaffMode = true;
+                        localStorage.setItem('hei_haya_pos', 'true'); // Save to browser memory
                         toggleAdminModal();
                         showToast("POS Mode Activated");
-                        
-                        // Switch UI to Staff Mode visually
-                        const subtitle = document.getElementById('header-subtitle');
-                        subtitle.innerText = "STAFF POS MODE";
-                        subtitle.classList.replace('text-brand', 'text-red-600');
-                        
-                        // Reveal Staff confirmation buttons, hide customer buttons
-                        document.getElementById('customer-buttons').classList.add('hidden');
-                        document.getElementById('staff-buttons').classList.remove('hidden');
-                        document.getElementById('staff-buttons').classList.add('flex');
-                    } else {
+                        activateStaffUI();
+                    }
+                     else {
                         errorMsg.style.opacity = '1';
                     }
                 })
