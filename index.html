@@ -1245,17 +1245,16 @@
 
             const params = new URLSearchParams(window.location.search);
             
+            // 1. Is this device permanently logged in?
             if (localStorage.getItem('hei_haya_pos') === 'true') {
-                isStaffMode = true;
                 activateStaffUI();
             }
             
-            if (params.get('mode') === 'staff') {
-                activateStaffUI();
+            // 2. Is a waitress clicking a temporary confirmation link?
+            if (params.get('mode') === 'confirm') {
+                activateWaitressUI();
                 document.getElementById('customer-name').value = params.get('name') || "";
                 document.getElementById('table-number').value = params.get('table') || "";
-                document.getElementById('customer-buttons').classList.add('hidden');
-                document.getElementById('staff-buttons').classList.remove('hidden');
             }
             
             fetchMenu();
@@ -1263,7 +1262,7 @@
 
         function restoreCartFromURL() {
             const params = new URLSearchParams(window.location.search);
-            if (params.get('mode') === 'staff') {
+            if (params.get('mode') === 'confirm') {
                 try {
                     const compressedCart = JSON.parse(decodeURIComponent(params.get('c')));
                     menuData.forEach(cat => {
