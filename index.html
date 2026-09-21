@@ -738,6 +738,11 @@
                 modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.style.overflow = 'hidden';
             } else {
                 modal.classList.add('hidden'); modal.classList.remove('flex'); document.body.style.overflow = '';
+                
+                // --- NEW: If the order was just confirmed, automatically reset the cart when closing! ---
+                if (document.getElementById('staff-confirm-btn').style.display === 'none') {
+                    startNewOrder();
+                }
             }
         }
 
