@@ -713,6 +713,9 @@
                     actionsDiv.classList.remove('hidden');
                     actionsDiv.classList.add('flex');
 
+                    // UI CLEANUP: Hide the top cart items list to make massive room for the receipt & QR
+                    document.getElementById('cart-items-container').classList.add('hidden');
+
                     // --- POPULATE HIDDEN PRINT LAYOUT ---
                     const basePrice = total / 1.05;
                     const gstAmount = total - basePrice;
