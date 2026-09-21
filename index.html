@@ -362,10 +362,15 @@
 
         // --- CONFIGURATION ---
         const STAFF_PIN = "1234";
+        const OWNER_PIN = "8888"; // NEW: For analytics
         const UPI_ID = "heihayacafe@okaxis"; 
         const PAYEE_NAME = "Hei Haya Cafe";
         
-        let menuData = []; // Starts empty, fills from Google Sheets
+        let menuData = []; 
+        let todayPrefix = "";
+        let currentYear = "";
+        let currentMonth = "";
+        let currentDay = "";
 
         function printReceipt() {
             document.getElementById('print-section').style.display = 'block';
