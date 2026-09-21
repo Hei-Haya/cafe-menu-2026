@@ -706,57 +706,106 @@
 
                 if (result.startsWith("Success|")) {
                     const officialOrderId = result.split("|")[1]; 
-                    
-                    // Hide the loading button
                     btn.style.display = 'none';
 
-                    // Reveal the post-confirmation actions container
                     const actionsDiv = document.getElementById('post-confirm-actions');
                     actionsDiv.classList.remove('hidden');
                     actionsDiv.classList.add('flex');
 
-                    // Prepare the Kitchen Ticket using the FIXED live cart text
+                    // --- POPULATE HIDDEN PRINT LAYOUT ---
+                    const basePrice = total / 1.05;
+                    const gstAmount = total - basePrice;
+                    const cgst = gstAmount / 2;
+                    
+                    document.getElementById('p-order').innerText = officialOrderId;
+                    document.getElementById('p-date').innerText = new Date().toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'});
+                    document.getElementById('p-name').innerText = customerName;
+                    document.getElementById('p-table').innerText = tableNo;
+                    document.getElementById('p-items').innerText = finalItemsText.trim();
+                    document.getElementById('p-base').innerText = basePrice.toFixed(2);
+                    document.getElementById('p-cgst').innerText = cgst.toFixed(2);
+                    document.getElementById('p-sgst').innerText = cgst.toFixed(2);
+                    document.getElementById('p-total').innerText = total.toFixed(2);
+
                     const kitchenMsg = `👨‍🍳 *KITCHEN TICKET* 👨‍🍳\n*Order ID:* ${officialOrderId}\n*Table No:* ${tableNo}\n-------------------------\n${finalItemsText.trim()}`;
                     const kitchenLink = `https://api.whatsapp.com/send?phone=${KITCHEN_WHATSAPP_NUMBER}&text=${encodeURIComponent(kitchenMsg)}`;
 
                     let actionHtml = '';
 
-                    // Generate Customer Button ONLY if it was a WhatsApp order
                     if (via === 'wa') {
                         const now = new Date();
                         const formattedDate = ("0" + now.getDate()).slice(-2) + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + now.getFullYear();
                         let hours = now.getHours();
                         const minutes = ("0" + now.getMinutes()).slice(-2);
                         const ampm = hours >= 12 ? 'pm' : 'am';
-                        hours = hours % 12;
-                        hours = hours ? hours : 12;
+                        hours = hours % 12; hours = hours ? hours : 12;
                         const formattedTime = hours + ":" + minutes + ampm;
 
-                        // Uses the FIXED live cart text
                         let waMessage = `Thagatchari! Your order (${officialOrderId}), with the following items, has been confirmed on ${formattedDate} at ${formattedTime} and is being prepared.\n\n${finalItemsText.trim()}\n*Total: ₹${total}*\n\nwith love and care from Hei Haya Cafe\n\n_Please feel free to scan the QR code to add more items._`;
-                        
                         const customerLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
-
-                        // Adds the green customer forwarding button
                         actionHtml += `<button onclick="window.location.href='${customerLink}'" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-xl font-bold text-lg shadow-md flex justify-center items-center gap-2 transition-colors">Forward Receipt to Customer</button>`;
                     } else {
-                        // For QR code orders, just show a polite success banner
                         actionHtml += `<div class="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl text-center font-bold mb-1 shadow-sm">✅ Order Saved: ${officialOrderId}</div>`;
                     }
 
-                    // Always add the dark Kitchen Ticket button at the bottom
+                    // --- INJECT ORDER PREVIEW & QR FOR STAFF POS ---
+                    if (isStaffMode && via === 'pos') {
+                        actionHtml += `
+                        <div class="mt-2 mb-2 bg-orange-50 border border-orange-200 rounded-xl p-4 text-left shadow-sm">
+                            <p class="text-xs font-bold text-orange-600 uppercase tracking-wider mb-2">Order Summary & Payment</p>
+                            <div class="flex justify-between items-start border-b border-orange-200 pb-3 mb-3">
+                                <div>
+                                    <p class="text-sm font-bold text-gray-900">${customerName} <span class="text-orange-600 ml-1 font-semibold">(Table ${tableNo})</span></p>
+                                    <p class="text-xs font-mono text-gray-600">${officialOrderId}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500 uppercase font-bold">Total</p>
+                                    <p class="text-lg font-black text-gray-900">₹${total.toFixed(2)}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4 flex flex-col sm:flex-row gap-4 items-stretch">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Order Details</p>
+                                    <pre class="text-xs text-gray-800 font-sans whitespace-pre-wrap leading-relaxed bg-white p-2 rounded-lg border border-orange-100 max-h-32 overflow-y-auto">${finalItemsText.trim()}</pre>
+                                </div>
+                                
+                                <div class="shrink-0 flex flex-col items-center justify-center p-3 bg-white rounded-lg border border-orange-200 shadow-sm w-full sm:w-auto">
+                                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Pay: ₹${total.toFixed(2)}</p>
+                                    <div id="pos-qr-container" class="p-1 border border-orange-100 rounded-lg bg-white flex justify-center"></div>
+                                    <p class="text-[9px] text-gray-400 mt-2 font-mono max-w-[130px] truncate text-center">${UPI_ID}</p>
+                                </div>
+                            </div>
+
+                            <button onclick="printReceipt()" class="w-full bg-[#ea580c] hover:bg-[#c2410c] text-white py-3 rounded-lg font-bold shadow-md transition-colors flex justify-center items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                                Print Receipt
+                            </button>
+                        </div>`;
+                    }
+
                     actionHtml += `<button onclick="window.location.href='${kitchenLink}'" class="w-full bg-gray-900 hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-lg shadow-md flex justify-center items-center gap-2 transition-colors">Send Ticket to Kitchen</button>`;
 
-                    // NEW: Add "Start New Order" button if in persistent POS mode
                     if (isStaffMode && via === 'pos') {
                         actionHtml += `<button onclick="startNewOrder()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-900 py-4 rounded-xl font-bold text-lg shadow-md transition-colors mt-2 border border-gray-300">Start New Order</button>`;
                     }
-
+                    
                     actionsDiv.innerHTML = actionHtml;
 
-                } else {
-                    throw new Error(result);
-                }
+                    // --- DRAW THE QR CODE IF IN POS MODE ---
+                    if (isStaffMode && via === 'pos') {
+                        const upiString = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${total.toFixed(2)}&cu=INR`;
+                        new QRCode(document.getElementById("pos-qr-container"), {
+                            text: upiString,
+                            width: 110,
+                            height: 110,
+                            colorDark : "#ea580c",
+                            colorLight : "#ffffff",
+                            correctLevel : QRCode.CorrectLevel.M
+                        });
+                    }
+
+                } else { throw new Error(result); }
             }).catch(e => {
                 alert("Network error saving to sheet. Please try again.");
                 btn.innerText = "Confirm & Log to Database";
