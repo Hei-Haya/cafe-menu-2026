@@ -205,6 +205,37 @@
                 <p id="admin-error" class="text-red-600 text-sm font-bold mt-4 opacity-0 transition-opacity">Invalid credentials</p>
             </div>
         </div>
+        
+        <!-- HIDDEN THERMAL PRINT LAYOUT -->
+        <div id="print-section" class="hidden">
+            <h2 style="text-align: center; margin-bottom: 2px; font-size: 18px; font-family: sans-serif; font-weight: bold;">HEI HAYA CAFE</h2>
+            <div style="text-align: center; font-size: 11px; margin-bottom: 15px;">Imphal, Manipur</div>
+            
+            <div><strong>Order ID:</strong> <span id="p-order"></span></div>
+            <div><strong>Date:</strong> <span id="p-date"></span></div>
+            <div><strong>Customer:</strong> <span id="p-name"></span></div>
+            <div><strong>Table No:</strong> <span id="p-table"></span></div>
+            
+            <div class="dashed-line"></div>
+            <pre id="p-items" style="font-family: inherit; font-size: 12px; white-space: pre-wrap; margin: 0;"></pre>
+            <div class="dashed-line"></div>
+            
+            <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                <tr><td>Base Amount:</td><td style="text-align: right;">₹<span id="p-base"></span></td></tr>
+                <tr><td>CGST (2.5%):</td><td style="text-align: right;">₹<span id="p-cgst"></span></td></tr>
+                <tr><td>SGST (2.5%):</td><td style="text-align: right;">₹<span id="p-sgst"></span></td></tr>
+                <tr><td colspan="2"><div class="dashed-line"></div></td></tr>
+                <tr style="font-size: 16px; font-weight: bold;">
+                    <td>GRAND TOTAL:</td><td style="text-align: right;">₹<span id="p-total"></span></td>
+                </tr>
+            </table>
+            
+            <div style="text-align: center; margin-top: 15px; font-size: 10px;">
+                * Prices are inclusive of 5% GST *<br><br>
+                Thank you for visiting us!<br>
+                Scan QR on table to order more.
+            </div>
+        </div>
     </main>
 
     <script>
