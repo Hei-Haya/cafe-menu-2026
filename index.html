@@ -912,14 +912,20 @@
         // ========================================== 
         // 3. APPLICATION ROUTER
         // ========================================== 
+        // ========================================== 
+        // 3. APPLICATION ROUTER
+        // ========================================== 
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             
+            // Check if POS Mode is saved in browser storage
+            if (localStorage.getItem('hei_haya_pos') === 'true') {
+                isStaffMode = true;
+                activateStaffUI();
+            }
+            
             if (params.get('mode') === 'staff') {
-                // Change header visually
-                const subtitle = document.querySelector('header p');
-                subtitle.innerText = "STAFF EDIT MODE";
-                subtitle.classList.replace('text-brand', 'text-red-600');
+                activateStaffUI();
                 
                 // Reconstruct the editable cart from the URL
                 try {
