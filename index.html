@@ -373,21 +373,17 @@
     </main>
 
     <script>
-        // Set the restaurant's WhatsApp phone number here (include country code, no +)
-        const RESTAURANT_WHATSAPP_NUMBER = "918920670165"; 
-        
-        // NEW: Set the Kitchen / Chef's WhatsApp phone number here
-        const KITCHEN_WHATSAPP_NUMBER = "919366206186";
-        
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzEBq6iLdjhAU_VTu5r4jneDvSOF3BQXfEY0lYGAXi3kZuyhLnr5kqoD9Nhpe3exZQX/exec";
 
-        // --- CONFIGURATION ---
-        const STAFF_PIN = "1234";
-        const OWNER_PIN = "8888"; // NEW: For analytics
-        const UPI_ID = "heihayacafe@okaxis"; 
-        const PAYEE_NAME = "Hei Haya Cafe";
+        // --- DYNAMIC CONFIGURATION (Loaded from Google Sheets) ---
+        let RESTAURANT_WHATSAPP_NUMBER = ""; 
+        let KITCHEN_WHATSAPP_NUMBER = "";
+        let STAFF_PIN = "";
+        let OWNER_PIN = ""; 
+        let UPI_ID = ""; 
+        let PAYEE_NAME = "";
         
-        let menuData = []; 
+        let menuData = [];
         let todayPrefix = "";
         let currentYear = "";
         let currentMonth = "";
